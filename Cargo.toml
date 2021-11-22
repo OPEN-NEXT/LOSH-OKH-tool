@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: 2021 Robin Vobruba <hoijui.quaero@gmail.com>
+#
+# SPDX-License-Identifier: Unlicense
+
+[package]
+name = "okh-tool"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+# Activate this to enable all OKH v1 properties, as per default, only those requried for converting to OKH LOSH are enabled
+v1_non_losh = [] # feature has no explicit dependencies
+
+[dependencies]
+#chrono = "0.4.19"
+clap = "3.0.0-beta.2"
+git2 = "0.13"
+globset = "0.4.8"
+jsonschema = "0.13"
+log = "0.4.14"
+num-derive = "0.3"
+num-traits = "0.2"
+once_cell = "1.8.0"
+regex = "1.5"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.59"
+serde_yaml = "0.8"
+simplelog = "0.11.0"
+spdx = "0.7.0"
+strum = "0.23"
+strum_macros = "0.23"
+thiserror = "1.0.30"
+toml = "0.5"
+walkdir = "2"
+yaml-rust = "0.4"
+
+#[build-dependencies]
+#csv = "1.1"

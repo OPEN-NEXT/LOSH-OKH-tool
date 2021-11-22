@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2021 Robin Vobruba <hoijui.quaero@gmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+# See the output of "$0 -h" for details.
+
+# Exit immediately on each error and unset variable;
+# see: https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+#set -Eeu
+
+script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+#source "$script_dir/_shared_git"
+
+# initial default values
+APP_NAME="OKH version 1 YAMLs Fetcher"
+# https://github.com/OpenKnowHow/okh-search/blob/master/projects_okhs.csv
+MAIN_CSV_URL="https://raw.githubusercontent.com/OpenKnowHow/okh-search/master/projects_okhs.csv"
+APPROPEDIA_CSV_URL="https://open-next.github.io/LOSH-Appropedia-Scraper/appro_yaml_urls.csv"
+build_dir="target"
+yamls_orig_dir="$build_dir/okh_v1/orig"
+yamls_clean_dir="$build_dir/okh_v1/clean"
+tomls_dir="$build_dir/okh_v2"
+OKH_TOOL="${OKH_TOOL:-$(which okh-tool || true)}"
+okh_tool="${OKH_TOOL:-$(find "$script_dir/target/release" -maxdepth 1 -type f -name okh-tool || true)}"
+fetch_list=true
+fetch_yamls=true
+clean=true
+convert=true
+validate=true
+
+function print_help() {
+
+	script_name="$(basename "$0")"
+	echo "$APP_NAME - Removes remote branch refs (except on origin) that are referencing commits"
+	echo "which are also present in the remaining branches."
+	echo "It then also removes the remotes that have no branch refs left."
+	echo
+	echo "Usage:"
+	echo "  $script_name [OPTION...]"
+	echo "Options:"
+	echo "  -h, --help      Print this usage help and exit"
+	echo "Examples:"shasum
+	echo "  $script_name"
+}
+
+# read command-line args
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+	arg="$1"
+	shift # $2 -> $1, $3 -> $2, ...
+
+	case "$arg" in
+		-h|--help)
+			print_help
+			exit 0
+			;;
+		*) # non-/unknown option
+			POSITIONAL+=("$arg") # save it in an array for later
+			;;
+	esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+# Returns a checksum for a supplied file
+function cs() {
+	file="$1"
+	if [ -f "$file" ]
+	then
+		shasum --text "$file" | sed -e 's/ .*$//'
+	else
+		echo "0"
+	fi
+}
+
+# From:
+# https://stackoverflow.com/a/37840948/586229
+function url_decode() {
+	: "${*//+/ }"
+	echo -e "${_//%/\\x}"
+}
+
+if [ -z "$okh_tool" ] || ! [ -f "$okh_tool" ]
+then
+	>&2 echo "ERROR: No valid path to the okh-tool could be figured out. please set OKH_TOOL accordingly!"
+	exit 1
+else
+	echo "INFO: Using $("$okh_tool" --version) at '$okh_tool'."
+fi
+
+mkdir -p "$build_dir"
+mkdir -p "$yamls_orig_dir"
+mkdir -p "$yamls_clean_dir"
+mkdir -p "$tomls_dir"
+
+csv="$build_dir/projects_okhs.csv"
+csv_new="$build_dir/projects_okhs_NEW.csv"
+csv_new_tmp="$build_dir/projects_okhs_NEW_tmp.csv"
+
+if $fetch_list
+then
+	echo
+	echo "################################################################################"
+	echo "Fetching and merging lists of OKH v1 YAML files ..."
+	# Get the main list
+	wget --quiet "$MAIN_CSV_URL" -O "$csv_new_tmp"
+	sed -i -e 's|7bindustries.com/static/braille-signage-generator|raw.githubusercontent.com/7B-Things/braille-signage-generator/main|g' "$csv_new_tmp" # HACK TODO Can be removed after merge of https://github.com/OpenKnowHow/okh-search/pull/56
+	# Filter out all the appropedia.org projects
+	grep -v "appropedia.org" < "$csv_new_tmp" > "$csv_new"
+	rm "$csv_new_tmp"
+	# Get the appropedia.org projects from the dedicated appropedia list
+	wget --quiet "$APPROPEDIA_CSV_URL" -O "$csv_new_tmp"
+	# ... and add it (without the header)
+	tail -n +2 < "$csv_new_tmp" >> "$csv_new"
+	rm "$csv_new_tmp"
+	# Remove spaces before and after commas
+	sed -i -e 's|\s*,\s*|,|g' "$csv_new"
+	# Split off the header
+	header="$(head -n 1 < "$csv_new")"
+	tail -n +2 < "$csv_new" > "$csv_new_tmp"
+	# Sort the content
+	sort < "$csv_new_tmp" > "$csv_new"
+	rm "$csv_new_tmp"
+	# Put the header on top again
+	echo "$header" > "$csv_new_tmp"
+	cat "$csv_new" >> "$csv_new_tmp"
+	mv "$csv_new_tmp" "$csv_new"
+fi
+
+cs_old="$(cs "$csv")"
+cs_new="$(cs "$csv_new")"
+if [ "$cs_old" = "$cs_new" ]
+then
+	rm -f "$csv_new"
+	echo "Nothing changed in the CSV; we are done!"
+#	exit 0 # HACK Un-comment this!
+else
+	if [ -f "$csv_new" ]
+	then
+		mv "$csv_new" "$csv"
+	fi
+fi
+
+if $fetch_yamls
+then
+	echo
+	echo "################################################################################"
+	echo "Fetching OKH v1 YAML files ..."
+	tail -n +2 < "$csv" | while read -r csv_line
+	do
+		name="${csv_line/%,*}"
+		url="${csv_line/#*,}"
+		date="${csv_line/$name,}"
+		date="${date/,$url}"
+
+		file_name="$(url_decode "$url" | sed -e 's|^https\?://||' -e 's|/|____|g' -e 's|[^0-9a-zA-Z_-]|_|g' -e 's|_ya?ml$|.yml|')"
+		# Ensure we do have a ".yml" suffix on our file
+		file_name="${file_name%.yml}.yml"
+		file_path="$yamls_orig_dir/$file_name"
+		if [ -f "$file_path" ]
+		then
+			echo "File present:     $file_name"
+		else
+			echo "File downloading: $file_name ..."
+			wget --quiet "$url" -O "$file_path"
+		fi
+		#printf '\t%s:\n\t\t%s\n' "$name" "$url"
+		#printf '\t%s\n' "$u_name"
+	done
+fi
+
+downloaded_yamls_count="$(find "$yamls_orig_dir/" -name "*.yml" | wc -l)"
+listed_yamls_count="$(tail -n +2 < "$csv" | wc -l)"
+
+if [ "$downloaded_yamls_count" -ne "$listed_yamls_count" ]
+then
+	>&2 echo "ERROR: The number of downloaded ($downloaded_yamls_count) and enlisted ($listed_yamls_count) OKH YAMLs differs!"
+	#exit 1
+fi
+
+if $clean
+then
+	echo
+	echo "################################################################################"
+	echo "\"Cleaning\" OKH v1 YAML files ..."
+	find "$yamls_orig_dir" -type f -iregex ".*\.[yY][aA]?[mM][lL]" | while read -r yaml_orig_path
+	do
+		yaml_file="${yaml_orig_path/#*\/}"
+		yaml_clean_path="$yamls_clean_dir/$yaml_file"
+
+		if [[ "$yaml_file" =~ .*BadenLab____Hyperspectral-scanner.* ]]
+		then
+			echo
+			echo "Skipped cleaning of '$yaml_file'."
+			continue
+		fi
+
+		echo
+		echo "Cleaning '$yaml_file' ..."
+		# HACKY fixes
+		sed \
+			-e 's|FALSE|false|g' \
+			-e 's|TRUE|true|g' \
+			-e 's|^licensor: Field Ready|licensor:\n  name: Field Ready|g' \
+			-e 's|^development-stage: \[value\]||' \
+			-e 's|flase|false|g' \
+			-e 's|^%Open know-how manifest 0.1$||g' \
+			-e 's|^---$||g' \
+			-e 's|: @Du33Jerry|: "@Du33Jerry"|g' \
+			-e 's|name: $|name: ANONYMOUS|g' \
+			-e 's| bchow(at)seas(dot)upenn(dot)edu| bchow@seas.upenn.edu|g' \
+			-e 's| j\.bonvoisin\[at\]bath\.ac\.uk| j.bonvoisin@bath.ac.uk|g' \
+			"$yaml_orig_path" \
+			> "$yaml_clean_path"
+		if ! grep -q "^version: " < "$yaml_clean_path"
+		then
+			{
+				echo
+				echo "version: UNVERSIONED"
+				echo
+			} >> "$yaml_clean_path"
+		fi
+		if ! grep -q "^licensor: " < "$yaml_clean_path"
+		then
+			{
+				echo
+				echo "licensor:"
+				echo "  name: ANONYMOUS"
+				echo
+			} >> "$yaml_clean_path"
+		fi
+		echo "Done cleaning '$yaml_file'."
+	done
+fi
+
+if $validate
+then
+	echo
+	echo "################################################################################"
+	echo "Validating OKH v1 YAML files in '$yamls_clean_dir' ..."
+	"$okh_tool" val --okh-version v1 "$yamls_clean_dir"
+	echo "Done validating OKH v1 YAML files in '$yamls_clean_dir'."
+fi
+
+if $convert
+then
+	echo
+	echo "################################################################################"
+	echo "Converting OKH v1 YAML to OKH LOSH TOML files ..."
+	"$okh_tool" conv --continue "$yamls_clean_dir" "$tomls_dir"
+fi
+
+if $validate
+then
+	echo
+	echo "################################################################################"
+	echo "Validating OKH LOSH TOML files in '$tomls_dir' ..."
+	"$okh_tool" val --okh-version losh "$tomls_dir"
+	echo "Done validating OKH LOSH TOML files in '$tomls_dir'."
+fi
+
