@@ -49,11 +49,9 @@ pub enum Error {
     NoLicense,
 
     #[error("The license expression is not in a valid SPDX format; see <>.")]
-    // ParsingFailed(#[from] SpdxParseError),
     ParsingFailed(#[from] spdx::ParseError),
 
     #[error("The license specifier is valid, but the licensing scheme is not approved.")]
-    // NotApproved(#[from] ApprovementFailure),
     NotApproved(#[from] EvaluationError),
 }
 
@@ -61,7 +59,7 @@ pub fn validate_spdx_expr(expr: &str) -> Result<(), Error> {
     if expr.is_empty() {
         return Err(Error::NoLicense);
     }
-    let spdx_expr = spdx::Expression::parse(expr)?; //.map_err(SpdxParseError::from)?;
+    let spdx_expr = spdx::Expression::parse(expr)?;
     spdx_expr
         // .evaluate_with_failures(|req| {
         .evaluate_with_failures(|req| {
