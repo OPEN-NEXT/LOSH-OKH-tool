@@ -99,7 +99,7 @@ pub fn with_schema(schema: &JSONSchema, content: &serde_json::Value) -> Result<(
     schema
         .validate(content)
         .map_err(JsonSchemaValidationErrorCollection::from)
-        .map_err(|err| err.into())
+        .map_err(std::convert::Into::into)
     // let result = schema.validate(content);
     // if let Err(errors) = result {
     //     for error in errors {
