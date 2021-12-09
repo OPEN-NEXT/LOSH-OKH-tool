@@ -71,3 +71,12 @@ pub fn validate_spdx_expr(expr: &str) -> Result<(), Error> {
         .map_err(|failures| EvaluationError::from((expr.to_owned(), failures)))?;
     Ok(())
 }
+
+// TODO The return could be a Cow, but we do not (yet) need it.
+pub fn ensure_spdx_license_id(license_id: &str) -> String {
+    if validate_spdx_expr(license_id).is_ok() {
+        license_id.to_owned()
+    } else {
+        format!("LicenseRef-{}", license_id)
+    }
+}

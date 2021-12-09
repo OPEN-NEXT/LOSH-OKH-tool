@@ -128,19 +128,12 @@ fn technology_readiness_level(v1: &v1::Okh) -> Otrl {
     }
 }
 
-fn licenses(v1: &v1::Okh) -> Result<(Option<String>, Option<String>), Error> {
-    if let Some(licse) = [&v1.license.hardware, &v1.license.documentation]
+fn license(v1: &v1::Okh) -> Result<String, Error> {
+    if let Some(lcse) = [&v1.license.hardware, &v1.license.documentation]
         .iter()
         .find_map(|&val| val.as_ref())
     {
-        let mut spdx_license = None;
-        let mut alternative_license = None;
-        if license::validate_spdx_expr(licse.as_str()).is_ok() {
-            spdx_license = Some(licse.clone());
-        } else {
-            alternative_license = Some(licse.clone());
-        };
-        return Ok((spdx_license, alternative_license));
+        return Ok(license::ensure_spdx_license_id(lcse));
     }
     Err(Error::NoLicense)
 }
@@ -236,7 +229,7 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
     let function = Some(function(&v1));
     let documentation_readiness_level = Some(documentation_readiness_level(&v1));
     let technology_readiness_level = Some(technology_readiness_level(&v1));
-    let (spdx_license, alternative_license) = licenses(&v1)?;
+    let license = license(&v1)?;
     let licensor = licensor(&v1)?;
     let manufacturing_instructions = collect_doc_paths(&v1.making_instructions).collect();
     let user_manual = collect_doc_path(&v1.operating_instructions); // TODO FIXME This irgnores all but the first operating instruction!
@@ -258,8 +251,7 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
         function,
         documentation_readiness_level,
         technology_readiness_level,
-        spdx_license,
-        alternative_license,
+        license,
         licensor,
         manufacturing_instructions,
         user_manual,

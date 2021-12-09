@@ -57,13 +57,7 @@ pub struct Okh {
 
     pub version: DSString,
 
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub spdx_license: Option<DSString>,
-
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub alternative_license: Option<DSString>,
+    pub license: DSString,
 
     pub licensor: DSString,
 
