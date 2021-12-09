@@ -7,6 +7,7 @@
 
 mod cli;
 mod conversion;
+mod dir;
 mod formats;
 mod license;
 mod logger;
@@ -23,40 +24,11 @@ use std::{
 
 use formats::{v1, v2};
 use log::LevelFilter;
-use regex::Regex;
-use walkdir::WalkDir;
 
 macro_rules! main_err {
     ($msg:expr) => {
         return Err(std::io::Error::new(std::io::ErrorKind::Other, $msg).into())
     };
-}
-
-fn walk_dir(input_path: &Path, recursive: bool) -> WalkDir {
-    let mut walker = WalkDir::new(input_path);
-    walker = walker.min_depth(1);
-    if recursive {
-        walker = walker.max_depth(1);
-    }
-    walker
-}
-
-fn iter_exts_matching(walk_dir: WalkDir, regex: &'_ Regex) -> impl '_ + Iterator<Item = PathBuf> {
-    walk_dir
-        .into_iter()
-        .filter_map(Result::ok)
-        .filter(|entry| {
-            let path = entry.path();
-            if path.is_file() {
-                if let Some(ext) = path.extension() {
-                    if let Some(ext_utf8) = ext.to_str() {
-                        return regex.is_match(ext_utf8);
-                    }
-                }
-            }
-            false
-        })
-        .map(|entry| entry.path().to_path_buf())
 }
 
 fn convert(
@@ -123,8 +95,7 @@ fn convert(
         };
 
         let mut total_res = Ok(());
-        for yaml_file in
-            iter_exts_matching(walk_dir(&input_path, recursive), v1::Okh::ext_matcher())
+        for yaml_file in dir::iter_exts(dir::walker(&input_path, recursive), v1::Okh::ext_matcher())
         {
             let mut toml_file = output_path.join(yaml_file.strip_prefix(&input_path)?);
             toml_file.set_extension("toml");
@@ -197,7 +168,7 @@ fn validate(
             validation::okh_losh_toml
         };
         let mut total_res = Ok(());
-        for input_file in iter_exts_matching(walk_dir(input_path, recursive), ext_matcher) {
+        for input_file in dir::iter_exts(dir::walker(input_path, recursive), ext_matcher) {
             let res = validator(&input_file);
             if let Err(err) = res {
                 log::warn!("File: '{}'\n{}", input_file.display(), &err);
