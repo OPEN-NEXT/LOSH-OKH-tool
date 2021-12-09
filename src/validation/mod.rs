@@ -9,8 +9,14 @@ use once_cell::sync::Lazy;
 
 use std::{fmt, fs, path::Path};
 
-const SCHEMA_OKH_LOSH: &str = include_str!("../okh-losh.schema.json"); // TODO de-duplicate, is also under /home/hoijui/Projects/OSEG/repos/
-const SCHEMA_OKH_V1: &str = include_str!("../okh-v1.schema.json"); // TODO de-duplicate, is also under /home/hoijui/Projects/OSEG/repos/
+const SCHEMA_OKH_LOSH: &str = include_str!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/resources/okh-json-schemas/okh-losh.schema.json"
+)); // TODO de-duplicate; is also under $HOME/Projects/OSEG/repos/
+const SCHEMA_OKH_V1: &str = include_str!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/resources/okh-json-schemas/okh-v1.schema.json"
+)); // TODO de-duplicate; is also under $HOME/Projects/OSEG/repos/
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
