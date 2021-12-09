@@ -224,6 +224,18 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
     log::debug!("Converting OKH v1 to v2 ...");
     let version = version(&v1)?;
     let repo = repo(&v1)?;
+    let organisation = None;
+    let readme = None;
+    let contribution_guide = None;
+    let attestation = vec![];
+    let standard_compliance = v1
+        .standards_used
+        .iter()
+        .map(|std| std.standard_title.clone())
+        .collect();
+    let cpc_patent_class = None;
+    let tsdc = None;
+    let image = v1.image.iter().map(String::to_owned).collect();
     let timestamp = timestamp(&v1);
     let fork_of = fork_of(&v1)?;
     let function = Some(function(&v1));
@@ -235,13 +247,23 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
     let user_manual = collect_doc_path(&v1.operating_instructions); // TODO FIXME This irgnores all but the first operating instruction!
     let software = software(&v1);
     let standard = standard(&v1);
-    let sub_mosh = sub_mosh(&v1)?;
+    let source = vec![]; // TODO see v1.design_files and v1.schematics, but split into source, export and auxiliary!
+    let export = vec![]; // TODO see v1.design_files and v1.schematics, but split into source, export and auxiliary!
+    let auxiliary = vec![]; // TODO see v1.design_files and v1.schematics, but split into source, export and auxiliary!
+    let part = sub_mosh(&v1)?;
 
     Ok(v2::Okh {
         okhv: v2::OKHV.to_owned(),
         name: v1.title,
+        organisation,
+        readme,
+        contribution_guide,
+        attestation,
+        standard_compliance,
+        cpc_patent_class,
+        tsdc,
         version,
-        image: v1.image,
+        image,
         repo,
         documentation_language: v1.documentation_language,
         bom: v1.bom,
@@ -257,7 +279,10 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
         user_manual,
         software,
         standard,
-        sub_mosh,
+        source,
+        export,
+        auxiliary,
+        part,
     })
 }
 

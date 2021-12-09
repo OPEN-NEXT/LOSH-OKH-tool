@@ -17,6 +17,7 @@ use super::{ParseError, SerError};
 pub type DSString = String;
 
 pub const OKHV: &str = "OKH-LOSHv1.0";
+pub const MANIFEST_FILE_NAME: &str = "okh.toml";
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -62,13 +63,40 @@ pub struct Okh {
     pub licensor: DSString,
 
     #[serde(default)]
-    // #[serde(skip_serializing_if = "String::is_empty")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub image: Option<DSString>,
+    pub organisation: Option<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub readme: Option<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contribution_guide: Option<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub image: Vec<DSString>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub documentation_language: Option<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub attestation: Vec<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub standard_compliance: Vec<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cpc_patent_class: Option<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tsdc: Option<DSString>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -116,7 +144,19 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub sub_mosh: Vec<SubMosh>,
+    pub source: Vec<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub export: Vec<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub auxiliary: Vec<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub part: Vec<SubMosh>,
 }
 
 impl Okh {
