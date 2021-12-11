@@ -22,7 +22,9 @@ This repo contains two pieces of software:
 * `okh-tool`
 * `fetch-n-conv-v1`
 
-plus these files worth mentioning:
+and it uses the [OKH JSON-Schemas repo](
+https://github.com/OpenKnowHow/okh-search/blob/master/projects_okhs.csv)
+as submodule.
 
 * [okh-losh.schema.json](src/okh-losh.schema.json)
 * [okh-v1.schema.json](src/okh-v1.schema.json)
