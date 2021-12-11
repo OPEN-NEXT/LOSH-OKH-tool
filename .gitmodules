@@ -5,3 +5,6 @@
 [submodule "scripts"]
 	path = scripts
 	url = https://github.com/hoijui/rust-project-scripts.git
+[submodule "resources/okh-json-schemas"]
+	path = resources/okh-json-schemas
+	url = https://github.com/OPEN-NEXT/LOSH-OKH-JSON-Schemas.git
