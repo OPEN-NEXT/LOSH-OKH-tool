@@ -6,7 +6,7 @@ SPDX-License-Identifier: CC0-1.0
 
 # The software tools (and similar things) that came out of LOSH
 
-- [`osh-tool`](https://github.com/OPEN-NEXT/LOSH-OKH-tool)
+- [`okh-tool`](https://github.com/OPEN-NEXT/LOSH-OKH-tool)
   \- Rust CLI tool with various sub-commands:
   - `val` - validates manifest files:
     - OKH v1, YAML
