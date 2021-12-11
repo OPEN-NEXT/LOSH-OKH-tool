@@ -13,7 +13,8 @@ SPDX-License-Identifier: CC0-1.0
     https://api.reuse.software/badge/github.com/OPEN-NEXT/LOSH-OKH-tool)](
     https://api.reuse.software/info/github.com/OPEN-NEXT/LOSH-OKH-tool)
 
-* LOSH: _A **L**ibrary of **O**pen **S**ource **H**ardware - technical documentation in an open graph database._
+* LOSH: _A **L**ibrary of **O**pen **S**ource **H**ardware -
+  technical documentation in an open graph database._
 * OKH: _**O**pen **K**now-**H**ow - A standard for OSH project meta-data._
 
 This repo contains two pieces of software:
