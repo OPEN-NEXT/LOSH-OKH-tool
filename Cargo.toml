@@ -13,7 +13,7 @@ v1_non_losh = [] # feature has no explicit dependencies
 
 [dependencies]
 #chrono = "0.4.19"
-clap = "3.0.0-beta.2"
+clap = { version = "3.0.0-rc.4", features = ["cargo"] }
 git2 = "0.13"
 globset = "0.4.8"
 jsonschema = "0.13"

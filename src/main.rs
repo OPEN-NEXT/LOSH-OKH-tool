@@ -22,6 +22,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use clap::App;
 use formats::{v1, v2};
 use log::LevelFilter;
 

@@ -2,10 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use clap::{
-    crate_authors, crate_description, crate_license, crate_name, crate_version, App, AppSettings,
-    Arg, ValueHint,
-};
+use clap::{app_from_crate, App, AppSettings, Arg, ValueHint};
 use std::env;
 
 pub const SC_N_VALIDATE: &str = "val";
@@ -29,7 +26,7 @@ pub const A_S_OVERWRITE: char = 'o';
 
 fn arg_input() -> Arg<'static> {
     Arg::new(A_P_INPUT)
-        .about("The input file or dir path")
+        .help("The input file or dir path")
         .takes_value(true)
         .value_name("INPUT")
         .value_hint(ValueHint::AnyPath) // TODO Add a validation function
@@ -38,7 +35,7 @@ fn arg_input() -> Arg<'static> {
 
 fn arg_output() -> Arg<'static> {
     Arg::new(A_P_OUTPUT)
-        .about("The output file or dir path")
+        .help("The output file or dir path")
         .takes_value(true)
         .value_name("OUTPUT")
         .value_hint(ValueHint::AnyPath) // TODO Add a validation function
@@ -47,7 +44,7 @@ fn arg_output() -> Arg<'static> {
 
 fn arg_recursive() -> Arg<'static> {
     Arg::new(A_L_RECURSIVE)
-        .about("If the input path is a directory, search for input files recursively")
+        .help("If the input path is a directory, search for input files recursively")
         .takes_value(false)
         .short(A_S_RECURSIVE)
         .long(A_L_RECURSIVE)
@@ -57,9 +54,6 @@ fn arg_recursive() -> Arg<'static> {
 fn subcom_convert() -> App<'static> {
     App::new(SC_N_CONVERT)
         .about("Converts one format into an other (currently only OKH-v1 to OKH-LOSH)")
-        .version(crate_version!())
-        .author(crate_authors!())
-        .license(crate_license!())
         .arg(arg_input().index(1))
         .arg(arg_output().index(2))
         .arg(arg_recursive())
@@ -69,7 +63,7 @@ fn subcom_convert() -> App<'static> {
 
 fn arg_okhv() -> Arg<'static> {
     Arg::new(A_L_OKH_VERSION)
-        .about("If the input path is a directory, search for input files recursively")
+        .help("If the input path is a directory, search for input files recursively")
         .takes_value(true)
         .short(A_S_OKH_VERSION)
         .long(A_L_OKH_VERSION)
@@ -79,7 +73,7 @@ fn arg_okhv() -> Arg<'static> {
 
 fn arg_continue_on_error() -> Arg<'static> {
     Arg::new(A_L_CONTINUE_ON_ERROR)
-        .about("If the input path is a directory, continue processing further files, even after an error")
+        .help("If the input path is a directory, continue processing further files, even after an error")
         .takes_value(false)
         .short(A_S_CONTINUE_ON_ERROR)
         .long(A_L_CONTINUE_ON_ERROR)
@@ -88,9 +82,7 @@ fn arg_continue_on_error() -> Arg<'static> {
 
 fn arg_overwrite() -> Arg<'static> {
     Arg::new(A_L_OVERWRITE)
-        .about(
-            "If the outout file alreayd exists, overwrite it, instead of skipping the conversion",
-        )
+        .help("If the outout file alreayd exists, overwrite it, instead of skipping the conversion")
         .takes_value(false)
         .short(A_S_OVERWRITE)
         .long(A_L_OVERWRITE)
@@ -100,9 +92,6 @@ fn arg_overwrite() -> Arg<'static> {
 fn subcom_validate() -> App<'static> {
     App::new(SC_N_VALIDATE)
     .about("Validates manifest files for validity using JSON Schema (currently supports OKH-v1 and OKH-LOSH)")
-    .version(crate_version!())
-    .author(crate_authors!())
-    .license(crate_license!())
     .arg(arg_input().index(1))
     .arg(arg_okhv())
     .arg(arg_recursive())
@@ -110,12 +99,8 @@ fn subcom_validate() -> App<'static> {
 }
 
 pub fn arg_matcher() -> App<'static> {
-    let app = App::new(crate_name!())
-        .about(crate_description!())
-        .version(crate_version!())
-        .author(crate_authors!())
-        .license(crate_license!())
-        .setting(AppSettings::HelpRequired)
+    let app = app_from_crate!()
+        .setting(AppSettings::HelpExpected)
         .setting(AppSettings::InferLongArgs)
         .setting(AppSettings::PropagateVersion)
         .setting(AppSettings::SubcommandRequired)
