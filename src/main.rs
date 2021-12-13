@@ -188,8 +188,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     // logger::init(None, (LevelFilter::Trace, LevelFilter::Trace));
     logger::init(None, (LevelFilter::Info, LevelFilter::Trace));
 
-    let args = cli::arg_matcher().get_matches();
-    for sub_com_name in [cli::SC_N_CONVERT, cli::SC_N_VALIDATE] {
+    let arg_matcher = cli::arg_matcher();
+    let sub_command_names: Vec<String> = arg_matcher
+        .get_subcommands()
+        .map(App::get_name)
+        .map(ToOwned::to_owned)
+        .collect();
+    let args = &arg_matcher.get_matches();
+    for sub_com_name in &sub_command_names {
         if let Some(sub_com) = args.subcommand_matches(sub_com_name) {
             if sub_com_name == cli::SC_N_CONVERT {
                 let input_path = sub_com
