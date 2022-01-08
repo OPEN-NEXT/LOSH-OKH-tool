@@ -16,19 +16,19 @@ use crate::{dir, license};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Failed to read or write, probably from/to the file-system.")]
+    #[error("Failed to find a vlaue for projvar key '{0:?}'.")]
     PVKeyNotFound(Key),
 
     #[error("Failed to read or write, probably from/to the file-system.")]
     Io(#[from] std::io::Error),
 
-    #[error("Failed to read or write, probably from/to the file-system.")]
+    #[error("Misc error.")]
     General(#[from] Box<dyn std::error::Error>),
 
-    #[error("Failed to read or write, probably from/to the file-system.")]
+    #[error("Failed to serialize to TOML/YAML/similar.")]
     Serialization(#[from] SerError),
 
-    #[error("Failed to read or write, probably from/to the file-system.")]
+    #[error("Failed to initialize a git repo.")]
     Git2RepoInit(#[from] git2::Error),
 }
 
