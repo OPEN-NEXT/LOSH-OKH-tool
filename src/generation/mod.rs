@@ -32,8 +32,11 @@ pub enum Error {
     Git2RepoInit(#[from] git2::Error),
 }
 
+type Res<O> = Result<O, Error>;
+type OString = Option<String>;
+
 #[inline]
-fn pv(environment: &projvar::environment::Environment, key: Key) -> Result<String, Error> {
+fn pv(environment: &projvar::environment::Environment, key: Key) -> Res<String> {
     Ok(environment
         .output
         .get(key)
@@ -48,7 +51,7 @@ fn is_release_version(version: &str) -> bool {
         .unwrap_or(false)
 }
 
-pub fn run_projvar(proj_root: &Path) -> Result<projvar::environment::Environment, Error> {
+pub fn run_projvar(proj_root: &Path) -> Res<projvar::environment::Environment> {
     let fail_on_missing = false;
     let settings = projvar::settings::Settings {
         repo_path: Some(proj_root.to_path_buf()),
@@ -80,66 +83,51 @@ pub fn run_projvar(proj_root: &Path) -> Result<projvar::environment::Environment
     Ok(environment)
 }
 
-pub fn find_root_files(
-    proj_root: &Path,
-) -> Result<(Option<String>, Option<String>, Option<String>), Error> {
+pub fn find_root_files(proj_root: &Path) -> (OString, OString, OString) {
     let root_file_filters = &[
         rgx!(r#"README.*(\.(md|markdown))?"#),
         rgx!(r#"[Bb](ill)?[-_]?[Oo](f)?[-_]?[Mm](aterials)?"#),
         rgx!(r#"CONTRIBUTI(NG|ON)?(\.(md|markdown))?"#),
     ];
     let found_files = dir::scan(proj_root, false, root_file_filters, Path::file_name);
-    let mut found_files = found_files.iter().map(|fnds| {
+    let mut single_found_files = found_files.iter().map(|fnds| {
         let mut sorted = fnds.clone();
         sorted.sort_by_key(|pth| pth.as_os_str().len());
-        sorted
+        sorted.get(0).map(|p| p.display().to_string())
     });
-    let readme = found_files
-        .next()
-        .unwrap()
-        .get(0)
-        .map(|p| p.display().to_string());
-    let bom = found_files
-        .next()
-        .unwrap()
-        .get(0)
-        .map(|p| p.display().to_string());
-    let contribution_guide = found_files
-        .next()
-        .unwrap()
-        .get(0)
-        .map(|p| p.display().to_string());
 
-    Ok((readme, bom, contribution_guide))
+    (
+        single_found_files.next().unwrap(),
+        single_found_files.next().unwrap(),
+        single_found_files.next().unwrap(),
+    )
 }
 
-pub fn find_rec_files(proj_root: &Path) -> Result<Vec<String>, Error> {
-    let file_ext_filters = &[rgx!(r#"^(png|jpg|jpeg|gif|svg)$"#), rgx!(r#"^()$"#)];
+pub fn find_rec_files(proj_root: &Path) -> Vec<String> {
+    let file_ext_filters = &[rgx!(r#"^(png|jpg|jpeg|gif|svg)$"#), rgx!(r#"^()$"#)]; // TODO Write the second filter and use it
     let found_rec_files = dir::scan(proj_root, true, file_ext_filters, Path::extension);
     let mut found_rec_files = found_rec_files.iter().map(|fnds| {
         let mut sorted = fnds.clone();
         sorted.sort_by_key(|pth| pth.as_os_str().len());
         sorted
     });
-    let images = found_rec_files
+    found_rec_files
         .next()
         .unwrap()
         .iter()
         .map(|p| p.display().to_string())
-        .collect();
-
-    Ok(images)
+        .collect()
 }
 
-fn first_commit(repo: &git2::Repository) -> Result<git2::Commit<'_>, Error> {
+fn first_commit(repo: &git2::Repository) -> Res<git2::Commit<'_>> {
     let mut revwalk = repo.revwalk()?;
     revwalk.push_head()?;
     revwalk.set_sorting(git2::Sort::TOPOLOGICAL | git2::Sort::REVERSE)?;
     Ok(repo.find_commit(revwalk.next().unwrap()?)?)
 }
 
-pub fn okh_losh_toml(proj_root: &Path, overwrite: bool) -> Result<(), Error> {
-    let mut environment = run_projvar(proj_root)?;
+pub fn okh_losh_toml(proj_root: &Path, overwrite: bool) -> Res<()> {
+    let environment = run_projvar(proj_root)?;
 
     let license = license::ensure_spdx_license_id(&pv(&environment, Key::License)?);
 
@@ -169,16 +157,9 @@ pub fn okh_losh_toml(proj_root: &Path, overwrite: bool) -> Result<(), Error> {
     let git_author = first_commit.author().to_string();
     let licensor = git_author;
 
-    let (readme, bom, contribution_guide) = find_root_files(proj_root)?;
+    let (readme, bom, contribution_guide) = find_root_files(proj_root);
 
-    let file_ext_filters = &[rgx!(r#"^(png|jpg|jpeg|gif|svg)$"#), rgx!(r#"^()$"#)];
-    let found_rec_files = dir::scan(proj_root, true, file_ext_filters, Path::extension);
-    let mut found_rec_files = found_rec_files.iter().map(|fnds| {
-        let mut sorted = fnds.clone();
-        sorted.sort_by_key(|pth| pth.as_os_str().len());
-        sorted
-    });
-    let image = find_rec_files(proj_root)?;
+    let image = find_rec_files(proj_root);
 
     let okh_losh = v2::Okh {
         okhv: v2::OKHV.to_owned(),
