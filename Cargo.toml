@@ -6,6 +6,7 @@
 name = "okh-tool"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [features]
 # Activate this to enable all OKH v1 properties, as per default, only those requried for converting to OKH LOSH are enabled
