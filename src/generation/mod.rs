@@ -4,9 +4,11 @@
 
 mod language;
 
+use chrono::Datelike;
 use projvar::var::Key;
 
 use chrono::{DateTime, Utc};
+use std::process::Command;
 use std::{fs, path::Path};
 
 use crate::formats::v2;
@@ -30,6 +32,9 @@ pub enum Error {
 
     #[error("Failed to initialize a git repo.")]
     Git2RepoInit(#[from] git2::Error),
+
+    #[error("Failed to convert string to UTF-8.")]
+    NonUtf8(#[from] std::string::FromUtf8Error),
 }
 
 type Res<O> = Result<O, Error>;
@@ -196,7 +201,37 @@ pub fn okh_losh_toml(proj_root: &Path, overwrite: bool) -> Res<()> {
 
     let manifest_file = proj_root.join(v2::MANIFEST_FILE_NAME);
     if !manifest_file.exists() || overwrite {
-        okh_losh.to_toml_file(&manifest_file)?;
+        log::debug!("Writing to TOML file ...");
+
+        // construct the REUSE/SPDX license header
+        let git_user_name = String::from_utf8(
+            Command::new("git")
+                .arg("config")
+                .arg("user.name")
+                .output()?
+                .stdout,
+        )?;
+        let git_user_name = git_user_name.trim_end();
+        let git_user_email = String::from_utf8(
+            Command::new("git")
+                .arg("config")
+                .arg("user.email")
+                .output()?
+                .stdout,
+        )?;
+        let git_user_email = git_user_email.trim_end();
+        let header = format!(
+            "# SPDX-FileCopyrightText: {} {} <{}>
+#
+# SPDX-License-Identifier: CC0-1.0",
+            now.year(),
+            git_user_name,
+            git_user_email
+        );
+
+        let content = okh_losh.to_toml()?;
+
+        fs::write(manifest_file, format!("{}\n\n{}", header, content))?;
     } else {
         log::warn!(
             "Skipped writing '{}': File already exists. See `--overwrite`.",
