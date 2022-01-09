@@ -24,6 +24,8 @@ pub const A_S_CONTINUE_ON_ERROR: char = 'c';
 pub const A_L_OVERWRITE: &str = "overwrite";
 pub const A_S_OVERWRITE: char = 'o';
 
+pub const SC_N_GENERATE: &str = "gen";
+
 fn arg_input() -> Arg<'static> {
     Arg::new(A_P_INPUT)
         .help("The input file or dir path")
@@ -98,6 +100,12 @@ fn subcom_validate() -> App<'static> {
     .arg(arg_continue_on_error())
 }
 
+fn subcom_generate() -> App<'static> {
+    App::new(SC_N_GENERATE)
+    .about("Generates a starter-manifest file ('{}', OKH-LOSH) for the project at CWD. You will need to manually replace some TODO values within it.")
+    .arg(arg_overwrite())
+}
+
 pub fn arg_matcher() -> App<'static> {
     let app = app_from_crate!()
         .setting(AppSettings::HelpExpected)
@@ -107,6 +115,7 @@ pub fn arg_matcher() -> App<'static> {
         .setting(AppSettings::UseLongFormatForHelpSubcommand)
         .bin_name("okh-tool")
         .subcommand(subcom_convert())
-        .subcommand(subcom_validate());
+        .subcommand(subcom_validate())
+        .subcommand(subcom_generate());
     app
 }
