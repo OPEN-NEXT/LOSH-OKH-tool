@@ -8,3 +8,6 @@
 [submodule "resources/okh-json-schemas"]
 	path = resources/okh-json-schemas
 	url = https://github.com/OPEN-NEXT/LOSH-OKH-JSON-Schemas.git
+[submodule "resources/osh-file-types"]
+	path = resources/osh-file-types
+	url = https://gitlab.com/OSEGermany/osh-file-types.git
