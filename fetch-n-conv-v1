@@ -33,9 +33,12 @@ validate=true
 function print_help() {
 
 	script_name="$(basename "$0")"
-	echo "$APP_NAME - Removes remote branch refs (except on origin) that are referencing commits"
-	echo "which are also present in the remaining branches."
-	echo "It then also removes the remotes that have no branch refs left."
+	echo "$APP_NAME - Fetches two files containing lists of OKH v1 YAML files,"
+	echo "merges them, and then downloads all the ones that are not yet downloaded"
+	echo "(in a previous run)."
+	echo "Additionally, all of them get validated, converted to OKH LOSH TOML files,"
+	echo "and those get validated aswell."
+	echo "All the downloaded and generated files go to '<PWD>/target/'."
 	echo
 	echo "Usage:"
 	echo "  $script_name [OPTION...]"
