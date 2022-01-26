@@ -41,7 +41,7 @@ function print_help() {
 	echo "  $script_name [OPTION...]"
 	echo "Options:"
 	echo "  -h, --help      Print this usage help and exit"
-	echo "Examples:"shasum
+	echo "Examples:"
 	echo "  $script_name"
 }
 
