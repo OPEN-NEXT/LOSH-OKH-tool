@@ -12,7 +12,7 @@ SPDX-License-Identifier: CC0-1.0
     - OKH v1, YAML
     - OKH LOSHv1, TOML
   - `conv` - converts manifest files from OKH v1 to LOSHv1 (lossy)
-  - `gen` - generates an OKH LOSHv1 file,
+  - `gen` - (**WIP**) generates an OKH LOSHv1 file,
     given a (preferably git) local checkout of an OSH project
 - [appropedia-scraper](https://github.com/OPEN-NEXT/LOSH-Appropedia-Scraper)
   \- Fetches the list of project names hosted on [appropedia.org](https://appropedia.org),
@@ -25,7 +25,7 @@ SPDX-License-Identifier: CC0-1.0
 - [OKH LOSHv1 RDF tripple-store tester](https://github.com/OPEN-NEXT/LOSH-RDF-DB-tester)
   \- Allows to easily test an OKH RDF DB locally,
    with a fully automated setup,
-   allowing for SPQRQL querries on the data.
+   allowing for SPARQL querries on the data.
 - [OKH-JSON-Schemas](https://github.com/OPEN-NEXT/LOSH-OKH-JSON-Schemas)
   \- A repo containing only the [JSON-Schema](https://json-schema.org/)s
   for OKH v1 and LOSHv1 manifests.
@@ -33,7 +33,7 @@ SPDX-License-Identifier: CC0-1.0
   They are also (in my (Robins) opinion) the best way
   to document a manifest file format,
   as they are:
-  - targeting JSON, YAML, TOML nad some other formats
+  - targeting JSON, YAML, TOML and some other formats
   - videly supported
   - machine readable &
   - human oriented
