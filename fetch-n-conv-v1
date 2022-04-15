@@ -215,7 +215,7 @@ then
 
 		if [[ "$yaml_file" =~ .*BadenLab____Hyperspectral-scanner.* ]] \
 			|| [[ "$yaml_file" =~ .*_php_title_Composite_Materials_Resin_Mixing.*.yml ]] \
-			|| [[ "$yaml_file" =~ .*____jbon____Ball-Machine____master____okh-ballSortingMachine_yml.yml ]] \
+			|| [[ "$yaml_file" =~ .*____jbon____Ball-Machine____master____okh-ballSortingMachine.yml ]] \
 			|| [[ "$yaml_file" =~ .*title_Hexayurt____Book.yml ]]
 		then
 			echo
