@@ -5,11 +5,13 @@
 use std::{fs, path::Path};
 
 use regex::Regex;
+use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 use crate::macros::rgx;
 
-use super::{ParseError, SerError};
+use super::{Locator, ParseError, SerError};
 
 type DSString = String;
 
@@ -20,7 +22,9 @@ pub struct Document {
     pub title: Option<DSString>,
 
     #[serde(default)]
-    pub path: Option<DSString>,
+    pub path: Option<Locator>,
+    // // TODO Use this, when custom serialization and deserialization are implemented for Locator
+    // pub path: Option<Url>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
@@ -83,11 +87,11 @@ pub struct OtherThing {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub manifest: Option<DSString>,
+    pub manifest: Option<Url>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub web: Option<DSString>,
+    pub web: Option<Url>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
@@ -99,11 +103,11 @@ pub struct OtherThingWithLang {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub manifest: Option<DSString>,
+    pub manifest: Option<Url>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub web: Option<DSString>,
+    pub web: Option<Url>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -122,7 +126,7 @@ fn default_okh_manifest_version() -> Option<DSString> {
 /// <https://git.iostud.io/makernet/iop-cdb/-/blob/dev/server/assets/okh.okhdf>
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
-#[serde(default)]
+// #[serde(default)]
 pub struct Okh {
     /// Name of the hardware
     pub title: DSString,
@@ -140,12 +144,12 @@ pub struct Okh {
     pub keywords: Vec<DSString>,
 
     /// Link to the project
-    pub project_link: DSString,
+    pub project_link: Option<Url>,
 
     /// Link to an image
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub image: Option<DSString>,
+    pub image: Option<RelativePathBuf>,
 
     /// Someone has made this hardware
     #[serde(default)] // = false
@@ -209,16 +213,16 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub documentation_home: Option<DSString>,
+    pub documentation_home: Option<Url>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub archive_download: Option<DSString>,
+    pub archive_download: Option<Url>,
 
     #[cfg(feature = "v1_non_losh")]
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub design_files: Vec<Document>,
+    pub design_files: Vec<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -236,7 +240,7 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub bom: Option<DSString>,
+    pub bom: Option<RelativePathBuf>,
 
     #[cfg(feature = "v1_non_losh")]
     #[serde(default)]
@@ -308,8 +312,16 @@ pub struct Okh {
 }
 
 impl Okh {
+    pub fn main_url(&self) -> Option<&Url> {
+        self.project_link
+            .as_ref()
+            .or_else(|| self.documentation_home.as_ref())
+    }
+}
+
+impl Okh {
     pub fn from_yaml(yaml_str: &str) -> Result<Okh, ParseError> {
-        log::debug!("Parsing YAML to v2 ...");
+        log::debug!("Parsing YAML to v1 ...");
         let parsed = serde_yaml::from_str::<Okh>(yaml_str)?;
 
         if let (None, None, None) = (

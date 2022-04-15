@@ -64,7 +64,8 @@ pub fn validate_spdx_expr(expr: &str) -> Result<(), Error> {
         // .evaluate_with_failures(|req| {
         .evaluate_with_failures(|req| {
             if let spdx::LicenseItem::Spdx { id, .. } = req.license {
-                return id.is_osi_approved();
+                // return id.is_osi_approved();
+                return true;
             }
             false
         })
@@ -72,11 +73,13 @@ pub fn validate_spdx_expr(expr: &str) -> Result<(), Error> {
     Ok(())
 }
 
+// use log;
 // TODO The return could be a Cow, but we do not (yet) need it.
 pub fn ensure_spdx_license_id(license_id: &str) -> String {
     if validate_spdx_expr(license_id).is_ok() {
         license_id.to_owned()
     } else {
+        // log::warn!("{:#?}", validate_spdx_expr(license_id));
         format!("LicenseRef-{}", license_id)
     }
 }

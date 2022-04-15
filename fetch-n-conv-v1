@@ -24,6 +24,7 @@ yamls_clean_dir="$build_dir/okh_v1/clean"
 tomls_dir="$build_dir/okh_v2"
 OKH_TOOL="${OKH_TOOL:-$(which okh-tool || true)}"
 okh_tool="${OKH_TOOL:-$(find "$script_dir/target/release" -maxdepth 1 -type f -name okh-tool || true)}"
+krawl="${KRAWL:-$(which krawl)}"
 fetch_list=true
 fetch_yamls=true
 clean=true
@@ -43,7 +44,12 @@ function print_help() {
 	echo "Usage:"
 	echo "  $script_name [OPTION...]"
 	echo "Options:"
-	echo "  -h, --help      Print this usage help and exit"
+	echo "  -h, --help          Print this usage help and exit"
+	echo "  --skip-fetch-list   (step 1) Skips the downloading and merging of the lists of OKH v1 YAML files"
+	echo "  --skip-fetch-yamls  (step 2) Skips the downloading of the OKH v1 YAML files"
+	echo "  --skip-clean        (step 3) Skips the cleaning the OKH v1 YAML files"
+	echo "  --skip-convert      (step 4) Skips the conversion of the clean OKH v1 YAML to OKH v1-LOSH TOML files"
+	echo "  --skip-validation   (step 3.1 & 4.1) Skips the validation of the clean OKH v1 YAML and the OKH v1-LOSH TOML files"
 	echo "Examples:"
 	echo "  $script_name"
 }
@@ -59,6 +65,21 @@ do
 		-h|--help)
 			print_help
 			exit 0
+			;;
+		--skip-fetch-list)
+			fetch_list=false
+			;;
+		--skip-fetch-yamls)
+			fetch_yamls=false
+			;;
+		--skip-clean)
+			clean=false
+			;;
+		--skip-convert)
+			convert=false
+			;;
+		--skip-validate)
+			validate=false
 			;;
 		*) # non-/unknown option
 			POSITIONAL+=("$arg") # save it in an array for later
@@ -158,7 +179,7 @@ then
 		date="${csv_line/$name,}"
 		date="${date/,$url}"
 
-		file_name="$(url_decode "$url" | sed -e 's|^https\?://||' -e 's|/|____|g' -e 's|[^0-9a-zA-Z_-]|_|g' -e 's|_ya?ml$|.yml|')"
+		file_name="$(url_decode "$url" | sed -e 's|^https\?://||' -e 's|/|____|g' -e 's|[^0-9a-zA-Z_-]|_|g' -e 's|_ya\?ml$|.yml|')"
 		# Ensure we do have a ".yml" suffix on our file
 		file_name="${file_name%.yml}.yml"
 		file_path="$yamls_orig_dir/$file_name"
@@ -168,6 +189,18 @@ then
 		else
 			echo "File downloading: $file_name ..."
 			wget --quiet "$url" -O "$file_path"
+		fi
+		if [[ "$file_name" =~ .*_yml\.yml ]]
+		then
+			echo
+			echo "name: '$name'"
+			echo "url: '$(url_decode "$url")'"
+			fn="$(url_decode "$url" | sed -e 's|^https\?://||' -e 's|/|____|g' -e 's|[^0-9a-zA-Z_-]|_|g')"
+			echo "fn: '$fn'"
+			fn="$(echo "$fn" | sed -e 's|_ya\?ml$|.yml|')"
+			echo "fn: '$fn'"
+			echo
+			exit 33
 		fi
 		#printf '\t%s:\n\t\t%s\n' "$name" "$url"
 		#printf '\t%s\n' "$u_name"
@@ -195,8 +228,9 @@ then
 
 		if [[ "$yaml_file" =~ .*BadenLab____Hyperspectral-scanner.* ]] \
 			|| [[ "$yaml_file" =~ .*_php_title_Composite_Materials_Resin_Mixing.*.yml ]] \
-			|| [[ "$yaml_file" =~ .*____jbon____Ball-Machine____master____okh-ballSortingMachine_yml.yml ]] \
-			|| [[ "$yaml_file" =~ .*title_Hexayurt____Book.yml ]]
+			|| [[ "$yaml_file" =~ .*____jbon____Ball-Machine____master____okh-ballSortingMachine.yml ]] \
+			|| [[ "$yaml_file" =~ .*title_Hexayurt____Book.yml ]] \
+			|| [[ "$yaml_file" =~ .*title_Photovoltaic___solar_heating_system_on_Golf_Course_Rd__Bayside.yml ]]
 		then
 			echo
 			echo "Skipped cleaning of '$yaml_file'."
@@ -223,6 +257,10 @@ then
 			-e 's|^title: \([^>|]\)|title: >\n  \1|g' \
 			-e 's|^description: \([^>|]\)|description: >\n  \1|g' \
 			-e 's|: [.][/]|: |' \
+			-e 's|\s*# required .*$||' \
+			-e 's|: CC |: CC-|' \
+			-e 's|: CERN OHL v1.2|: CERN-OHL-1.2|' \
+			-e 's|: CERN$|: CERN-OHL-1.1|' \
 			"$yaml_orig_path" \
 			> "$yaml_clean_path"
 		if ! grep -q "^version: " < "$yaml_clean_path"
@@ -272,3 +310,10 @@ then
 	echo "Done validating OKH LOSH TOML files in '$tomls_dir'."
 fi
 
+if $convert
+then
+	echo
+	echo "################################################################################"
+	echo "Converting OKH LOSH TOML files to RDF/Turtle ..."
+	"$krawl" convdir "$tomls_dir" ".toml" ".ttl" -v
+fi

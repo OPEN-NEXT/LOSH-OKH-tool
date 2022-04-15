@@ -32,11 +32,11 @@ pub enum Error {
     #[error("Failed to parse the raw content as YAML.")]
     YamlParseFailure(#[from] serde_yaml::Error),
 
-    #[error("Failed to validate schema content .")]
+    #[error("Failed to validate schema content {0:#}.")]
     InvalidContent(#[from] JsonSchemaValidationError),
 
     // #[error(transparent)]
-    #[error("Failed to validate (1):\n{0}")]
+    #[error("Failed to validate:\n{0:#}")]
     ValidationFailure(#[from] JsonSchemaValidationErrorCollection),
 }
 

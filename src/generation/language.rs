@@ -5,6 +5,9 @@
 use lingua::{Language, LanguageDetectorBuilder};
 
 pub fn identify(text: &str) -> Option<String> {
+    // static DETECTOR: Lazy<LanguageDetector> = Lazy::new(|| {
+    //     LanguageDetectorBuilder::from_all_languages().build()
+    // });
     let detector = LanguageDetectorBuilder::from_all_languages().build();
 
     let detected_language: Option<Language> = detector.detect_language_of(text);

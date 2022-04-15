@@ -73,3 +73,33 @@ where
         });
     matching
 }
+
+// // pub fn scan_exts<P, R, F>(root_dir: P, recursive: bool, filters: F) -> Vec<Vec<PathBuf>>
+// //     where P: AsRef<Path>, R: AsRef<Regex>, F: IntoIterator<Item=R> + ExactSizeIterator + Copy
+// pub fn scan_exts<P>(root_dir: P, recursive: bool, filters: &[&Regex]) -> Vec<Vec<PathBuf>>
+// where P: AsRef<Path>
+// {
+// let mut matching = vec![];
+// for _ in 0..filters.len() {
+// matching.push(vec![]);
+// }
+// matching.len();
+// walker(root_dir, recursive)
+// .into_iter()
+// .filter_map(Result::ok)
+// .for_each(|entry| {
+//     let path = entry.path();
+//     if path.is_file() {
+//         if let Some(ext) = path.extension() {
+//             if let Some(ext_utf8) = ext.to_str() {
+//                 filters.into_iter().enumerate().for_each(|(i, flt)| {
+//                     if flt/*.as_ref()*/.is_match(ext_utf8) {
+//                         matching[i].push(path.to_path_buf());
+//                     }
+//                 });
+//             }
+//         }
+//     }
+// });
+// matching
+// }

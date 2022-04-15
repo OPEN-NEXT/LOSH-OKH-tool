@@ -80,19 +80,24 @@ macro_rules! impl_oxrl {
 )]
 pub enum Otrl {
     /// product specifications/requirements
-    #[strum(serialize = "OTRL-1")]
+    // #[strum(serialize = "OTRL-1")]
+    #[serde(rename = "OTRL-1")]
     Ideation = 1,
     /// proof of concept
-    #[strum(serialize = "OTRL-2")]
+    // #[strum(serialize = "OTRL-2")]
+    #[serde(rename = "OTRL-2")]
     Conception = 2,
     /// early prototype
-    #[strum(serialize = "OTRL-3")]
+    // #[strum(serialize = "OTRL-3")]
+    #[serde(rename = "OTRL-3")]
     TechnicalDesign = 3,
     /// minimum viable product
-    #[strum(serialize = "OTRL-4")]
+    // #[strum(serialize = "OTRL-4")]
+    #[serde(rename = "OTRL-4")]
     ProductDesign = 4,
     /// CE certification
-    #[strum(serialize = "OTRL-5")]
+    // #[strum(serialize = "OTRL-5")]
+    #[serde(rename = "OTRL-5")]
     SafeProduct = 5,
 }
 
@@ -112,19 +117,19 @@ impl_oxrl!(Otrl, "OTRL", R_OTRL_PREFIX);
 )]
 pub enum Odrl {
     /// making information available as free/open source material
-    #[strum(serialize = "ODRL-1")]
+    #[serde(rename = "ODRL-1")]
     Started = 1,
     /// enabling usability of the documentation by the provision of essential files and information
-    #[strum(serialize = "ODRL-2")]
+    #[serde(rename = "ODRL-2")]
     Minimal = 2,
     /// full exploitability of the documentation
-    #[strum(serialize = "ODRL-3")]
+    #[serde(rename = "ODRL-3")]
     Full = 3,
     /// attested compliance with DIN SPEC 3105-1
-    #[strum(serialize = "ODRL-4")]
+    #[serde(rename = "ODRL-3*")]
     Audited = 4,
     /// enabling decentralised commercial distribution
-    #[strum(serialize = "ODRL-5")]
+    #[serde(rename = "ODRL-4")]
     AuditedPlusCeDocs = 5,
 }
 

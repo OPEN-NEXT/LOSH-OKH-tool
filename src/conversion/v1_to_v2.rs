@@ -4,8 +4,12 @@
 
 use std::path::Path;
 
+use relative_path::RelativePathBuf;
+use url::Url;
+
 use crate::formats::v1;
 use crate::formats::v2;
+use crate::formats::Locator;
 use crate::license;
 use crate::oxrl::Odrl;
 use crate::oxrl::Otrl;
@@ -36,10 +40,16 @@ fn git_commit_date() -> Result<Option<i64>, Error> {
     }
 }
 
-fn shorten_to_repo_url(manifest_url: &str) -> Option<String> {
-    let parts: Vec<&str> = manifest_url.rsplit('/').collect();
-    let mut parts = parts.iter();
-    parts.next().map(|s| s.to_owned().to_owned())
+fn shorten_to_repo_url(manifest_url: &Url) -> Option<Url> {
+    let repo_path = RelativePathBuf::from(manifest_url.path());
+    let mut repo_url = manifest_url.clone();
+    match repo_path.parent() {
+        Some(parent_path) => {
+            repo_url.set_path(&parent_path.to_string());
+            Some(repo_url)
+        }
+        None => None,
+    }
 }
 
 fn version(v1: &v1::Okh) -> Result<String, Error> {
@@ -51,10 +61,13 @@ fn version(v1: &v1::Okh) -> Result<String, Error> {
     )
 }
 
-fn repo(v1: &v1::Okh) -> Result<String, Error> {
-    v1.documentation_home.as_ref().map_or(
+fn repo(v1: &v1::Okh) -> Result<Url, Error> {
+    v1.documentation_home
+        .as_ref()
+        .or_else(|| v1.project_link.as_ref())
+        .map_or(
         Err(Error::InsufficientData {
-            msg: "OKH v1 'documentation_home' is required to convert to OKH LOSH",
+            msg: "OKH v1 'documentation_home' or 'project_link' is required to convert to OKH LOSH",
         }),
         |repo| Ok(repo.clone()),
     )
@@ -72,7 +85,7 @@ fn timestamp(v1: &v1::Okh) -> Option<String> {
     }
 }
 
-fn fork_of(v1: &v1::Okh) -> Result<Option<String>, Error> {
+fn fork_of(v1: &v1::Okh) -> Result<Option<Url>, Error> {
     if let Some(parent) = [&v1.derivative_of, &v1.variant_of]
         .iter()
         .find_map(|&val| val.as_ref())
@@ -172,7 +185,10 @@ fn software(v1: &v1::Okh) -> Vec<v2::Software> {
     for sw in &v1.software {
         software.push(v2::Software {
             label: sw.title.clone(),
-            release: sw.path.clone(),
+            release: sw
+                .path
+                .as_ref()
+                .map(|loc| loc.to_url(v1.main_url().unwrap())),
         });
     }
     software
@@ -203,20 +219,48 @@ fn sub_mosh(v1: &v1::Okh) -> Result<Vec<v2::SubMosh>, Error> {
                 msg: "For 'sub(-part)', at least one of 'web' and 'manifest' needs to be specified",
             });
         };
-        sub_mosh.push(v2::SubMosh {
-            name: parent.title.clone(),
-            manifest_file: parent.manifest.clone(),
-            repo,
+        let name = parent.title.clone();
+        let main_url = v1.main_url().map(Url::to_string);
+        let manifest_file = parent.manifest.clone().and_then(|mf_url| match main_url {
+            None => None,
+            Some(main_url) => {
+                let mf_url_str = mf_url.to_string();
+                mf_url_str
+                    .strip_prefix(&main_url)
+                    .map(RelativePathBuf::from)
+            }
         });
+        let image = vec![];
+        let tsdc = None;
+        let source = vec![]; // TODO This or export is required
+        let export = vec![]; // TODO This or source is required
+        let auxiliary = vec![];
+        let part = vec![];
+        if false { // TODO As neither source nor export is set, we have to skip this for now, as otherwise we'd generate an invalod manifest
+            sub_mosh.push(v2::SubMosh {
+                name,
+                // manifest_file,
+                // repo,
+                image,
+                tsdc,
+                source,
+                export,
+                auxiliary,
+                part,
+            });
+        }
     }
     Ok(sub_mosh)
 }
 
-fn collect_doc_paths(docs: &'_ [v1::Document]) -> impl '_ + Iterator<Item = String> {
-    docs.iter().filter_map(|doc| doc.path.clone())
+fn collect_doc_paths(docs: &'_ [v1::Document]) -> impl '_ + Iterator<Item = RelativePathBuf> {
+    docs.iter().filter_map(|doc| match &doc.path {
+        Some(Locator::Path(path)) => Some(path.clone()),
+        _ => None,
+    })
 }
 
-fn collect_doc_path(docs: &[v1::Document]) -> Option<String> {
+fn collect_doc_path(docs: &[v1::Document]) -> Option<RelativePathBuf> {
     collect_doc_paths(docs).next() // TODO FIXME This irgnores all but the first document with a path!
 }
 
@@ -235,7 +279,6 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
         .collect();
     let cpc_patent_class = None;
     let tsdc = None;
-    let image = v1.image.iter().map(String::to_owned).collect();
     let timestamp = timestamp(&v1);
     let fork_of = fork_of(&v1)?;
     let function = Some(function(&v1));
@@ -251,9 +294,12 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
     let export = vec![]; // TODO see v1.design_files and v1.schematics, but split into source, export and auxiliary!
     let auxiliary = vec![]; // TODO see v1.design_files and v1.schematics, but split into source, export and auxiliary!
     let part = sub_mosh(&v1)?;
+    let image = v1.image.into_iter().collect();
+    let upload_method = Some("manifest-script".to_string()); // TODO clenaup this whole property in the specs 
 
     Ok(v2::Okh {
         okhv: v2::OKHV.to_owned(),
+        upload_method,
         name: v1.title,
         organisation,
         readme,
