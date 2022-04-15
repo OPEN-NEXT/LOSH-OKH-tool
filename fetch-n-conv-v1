@@ -244,6 +244,10 @@ then
 			-e 's|^title: \([^>|]\)|title: >\n  \1|g' \
 			-e 's|^description: \([^>|]\)|description: >\n  \1|g' \
 			-e 's|: [.][/]|: |' \
+			-e 's|\s*# required .*$||' \
+			-e 's|: CC |: CC-|' \
+			-e 's|: CERN OHL v1.2|: CERN-OHL-1.2|' \
+			-e 's|: CERN$|: CERN-OHL-1.1|' \
 			"$yaml_orig_path" \
 			> "$yaml_clean_path"
 		if ! grep -q "^version: " < "$yaml_clean_path"
