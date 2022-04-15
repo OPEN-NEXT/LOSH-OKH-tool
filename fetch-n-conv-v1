@@ -43,7 +43,12 @@ function print_help() {
 	echo "Usage:"
 	echo "  $script_name [OPTION...]"
 	echo "Options:"
-	echo "  -h, --help      Print this usage help and exit"
+	echo "  -h, --help          Print this usage help and exit"
+	echo "  --skip-fetch-list   (step 1) Skips the downloading and merging of the lists of OKH v1 YAML files"
+	echo "  --skip-fetch-yamls  (step 2) Skips the downloading of the OKH v1 YAML files"
+	echo "  --skip-clean        (step 3) Skips the cleaning the OKH v1 YAML files"
+	echo "  --skip-convert      (step 4) Skips the conversion of the clean OKH v1 YAML to OKH v1-LOSH TOML files"
+	echo "  --skip-validation   (step 3.1 & 4.1) Skips the validation of the clean OKH v1 YAML and the OKH v1-LOSH TOML files"
 	echo "Examples:"
 	echo "  $script_name"
 }
@@ -59,6 +64,21 @@ do
 		-h|--help)
 			print_help
 			exit 0
+			;;
+		--skip-fetch-list)
+			fetch_list=false
+			;;
+		--skip-fetch-yamls)
+			fetch_yamls=false
+			;;
+		--skip-clean)
+			clean=false
+			;;
+		--skip-convert)
+			convert=false
+			;;
+		--skip-validate)
+			validate=false
 			;;
 		*) # non-/unknown option
 			POSITIONAL+=("$arg") # save it in an array for later
