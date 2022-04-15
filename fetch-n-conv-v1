@@ -24,6 +24,7 @@ yamls_clean_dir="$build_dir/okh_v1/clean"
 tomls_dir="$build_dir/okh_v2"
 OKH_TOOL="${OKH_TOOL:-$(which okh-tool || true)}"
 okh_tool="${OKH_TOOL:-$(find "$script_dir/target/release" -maxdepth 1 -type f -name okh-tool || true)}"
+krawl="${KRAWL:-$(which krawl)}"
 fetch_list=true
 fetch_yamls=true
 clean=true
@@ -297,3 +298,10 @@ then
 	echo "Done validating OKH LOSH TOML files in '$tomls_dir'."
 fi
 
+if $convert
+then
+	echo
+	echo "################################################################################"
+	echo "Converting OKH LOSH TOML files to RDF/Turtle ..."
+	"$krawl" convdir "$tomls_dir" ".toml" ".ttl" -v
+fi
