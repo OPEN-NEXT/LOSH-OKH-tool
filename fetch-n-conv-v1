@@ -178,7 +178,7 @@ then
 		date="${csv_line/$name,}"
 		date="${date/,$url}"
 
-		file_name="$(url_decode "$url" | sed -e 's|^https\?://||' -e 's|/|____|g' -e 's|[^0-9a-zA-Z_-]|_|g' -e 's|_ya?ml$|.yml|')"
+		file_name="$(url_decode "$url" | sed -e 's|^https\?://||' -e 's|/|____|g' -e 's|[^0-9a-zA-Z_-]|_|g' -e 's|_ya\?ml$|.yml|')"
 		# Ensure we do have a ".yml" suffix on our file
 		file_name="${file_name%.yml}.yml"
 		file_path="$yamls_orig_dir/$file_name"
