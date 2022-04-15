@@ -18,7 +18,7 @@ use crate::{dir, license};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Failed to find a vlaue for projvar key '{0:?}'.")]
+    #[error("Failed to find a value for projvar key '{0:?}'.")]
     PVKeyNotFound(Key),
 
     #[error("Failed to read or write, probably from/to the file-system.")]
