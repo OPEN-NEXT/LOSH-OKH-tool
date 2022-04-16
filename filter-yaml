@@ -1,0 +1,201 @@
+#!/usr/bin/env python
+
+# SPDX-FileCopyrightText: 2022 Robin Vobruba <hoijui.quaero@gmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+import os
+import re
+import sys
+import toml
+import yaml
+from pathlib import Path
+
+BROKEN_THINGIVERSE_IMAGE_URL = 'https://cdn.thingiverse.com/'
+
+# This mapping (for OSHWA categories), is defined here:
+# https://github.com/OPEN-NEXT/OKH-LOSH/blob/master/data_mapping/data-mapping-OSHWA.md#category-mapping
+CATEGORIES_UNMAPPABLE = ["Arts", "Education", "Environmental", "Manufacturing", "Other", "Science", "Tool"]
+CATEGORIES_PRIMARY_TO_CPC = {
+    "3D Printing": "B33Y",
+    "Agriculture": "A01",
+    "Electronics": "H",
+    "Enclosure": "F16M",
+    "Home Connection": "H04W",
+    "IOT": "H04",
+    "Robotics": "B25J9/00",
+    "Sound": "H04R",
+    "Space": "B64G",
+    "Wearables": "H"
+}
+
+def print_help(name):
+    print(f"{name} - Converts OKH LOSH-v1-krawler YAML to OKH LOSH-v1(-spec) files.")
+    print()
+    print("Usage:")
+    print(f"  {name} -h, --help     Print this help message and exit")
+    print(f"  {name} [IN] [OUT]     Converts an input YAML file to an output TOML file")
+    print(f"  {name} [DIR]          Converts all YAML (*.yml) files in the given dir (recursively) to TOML files (*.toml)")
+    print("Examples:")
+    print(f"  {name} path/to/input.yml other-path-to-output.toml")
+    print(f"  {name} path/to/yamls/root/dir/")
+
+def filter_meta_to_plain(parent, part_name):
+    if part_name in parent:
+        part = parent[part_name]
+        if isinstance(part, list):
+            new_list = []
+            for elem in part:
+                if elem is not None and isinstance(elem, dict):
+                    if 'url' in elem:
+                        if not (part_name == 'image' and elem['url'] == BROKEN_THINGIVERSE_IMAGE_URL):
+                            new_list.append(elem['url'])
+                    elif 'path' in elem:
+                        new_list.append(elem['path'])
+                else:
+                    new_list.append(elem)
+            parent[part_name] = new_list
+        else:
+            if part is not None and isinstance(part, dict):
+                if 'url' in part:
+                    if not (part_name == 'image' and part['url'] == BROKEN_THINGIVERSE_IMAGE_URL):
+                        parent[part_name] = part['url']
+                elif 'path' in part:
+                    parent[part_name] = part['path']
+        # else:
+        #     raise RuntimeError()
+
+def normalize_classification(raw: dict):
+    primary_type = raw.get("primaryType")
+
+    if primary_type in CATEGORIES_UNMAPPABLE:
+        additional_type = raw.get("additionalType")
+        if additional_type is None:
+            return ""
+        if len(additional_type) == 0:
+            return ""
+
+        return additional_type[0]
+
+    return CATEGORIES_PRIMARY_TO_CPC.get(primary_type, primary_type) # FIXME Default (2nd arg) has to be None!
+
+def filter_yaml(yaml_data):
+    filter_meta_to_plain(yaml_data, 'bom')
+    filter_meta_to_plain(yaml_data, 'readme')
+    filter_meta_to_plain(yaml_data, 'image')
+    filter_meta_to_plain(yaml_data, 'source')
+    filter_meta_to_plain(yaml_data, 'export')
+    filter_meta_to_plain(yaml_data, 'manufacturing-instructions')
+    filter_meta_to_plain(yaml_data, 'user-manual')
+
+    if 'part' in yaml_data:
+        for part in yaml_data['part']:
+            filter_meta_to_plain(part, 'bom')
+            filter_meta_to_plain(part, 'readme')
+            filter_meta_to_plain(part, 'image')
+            filter_meta_to_plain(part, 'source')
+            filter_meta_to_plain(part, 'export')
+            filter_meta_to_plain(part, 'manufacturing-instructions')
+            filter_meta_to_plain(part, 'user-manual')
+
+    if 'software' in yaml_data:
+        for part in yaml_data['software']:
+            filter_meta_to_plain(part, 'installation-guide')
+
+    function_ident = 'function'
+    if function_ident in yaml_data and yaml_data[function_ident] is not None:
+        yaml_data[function_ident] = yaml_data[function_ident].replace('\r', '').replace('\n\ ', '\n').replace("\\'", "'").replace("\'", "'").replace('\\\"', '\"')
+
+    odrl_ident = 'documentation-readiness-level'
+    if odrl_ident in yaml_data and yaml_data[odrl_ident] is not None:
+        yaml_data[odrl_ident] = yaml_data[odrl_ident].replace('ODLR', 'ODRL').replace('ODRL', 'ODRL-').replace('--', '-').replace('Odrl', 'ODRL-').replace('odrl', 'ODRL-').replace('Star', '*').replace('star', '*')
+    otrl_ident = 'technology-readiness-level'
+    if otrl_ident in yaml_data and yaml_data[otrl_ident] is not None:
+        yaml_data[otrl_ident] = yaml_data[otrl_ident].replace('OTLR', 'OTRL').replace('OTRL', 'OTRL-').replace('--', '-').replace('Otrl', 'OTRL-').replace('ortl', 'OTRL-').replace('otrl', 'OTRL-')
+
+    os_bad_ident = 'openscad'
+    os_good_ident = 'openSCAD'
+    if os_bad_ident in yaml_data and yaml_data[os_bad_ident] is not None:
+        yaml_data[os_good_ident] = yaml_data[os_bad_ident]
+        yaml_data[os_bad_ident] = None
+
+    # These are copied verbatim from
+    cpc_ident = 'cpc-patent-class'
+    if cpc_ident in yaml_data and yaml_data[cpc_ident] is not None:
+        # if re.match(r'^["\']?(|3D Printing|Arts|Education|Electronics|Enclosure|Environmental|IOT|Manufacturing|Other|Robotics|Tool)["\']?$', yaml_data[cpc_ident]):
+        #     yaml_data[cpc_ident] = None
+        # This mapping is for OSHWA categories
+        if yaml_data[cpc_ident] == '':
+            yaml_data[cpc_ident] = None
+        elif yaml_data[cpc_ident] in CATEGORIES_UNMAPPABLE:
+            yaml_data[cpc_ident] = None
+        else:
+            cpc_class = CATEGORIES_PRIMARY_TO_CPC.get(yaml_data[cpc_ident], None)
+            if cpc_class is not None:
+                yaml_data[cpc_ident] = cpc_class
+
+def read_yaml_file(yml_file_in):
+    with open(yml_file_in, 'r') as file_in:
+        data = yaml.safe_load(file_in)
+        if type(data) == str:
+            # We should receive a 'dict'.
+            # 'str' indicates that something went wrong ("great API!").
+            raise RuntimeError()
+        return data
+
+def write_yaml_file(yml_file_out, data):
+    with open(yml_file_out, 'w') as file_out:
+        yaml.dump(data, file_out)
+
+def filter_okh_yaml(yml_in, yml_out):
+    '''
+    Filters an OKH YAML as comming from the Krawler
+    to produce an OKH LOSHv1 compatible one.
+    '''
+    data = read_yaml_file(yml_in)
+
+    filter_yaml(data)
+
+    write_yaml_file(yml_out, data)
+
+def write_toml_file(toml_file_out, data):
+    with open(toml_file_out, 'w') as file_out:
+        toml.dump(data, file_out)
+
+def filter_dir_rec(data_dir, force):
+    '''
+    Filters an all OKH YAML files found in a dir, recursively.
+    One may force overwriting, if hte output file alreayd exists.
+    '''
+
+    yamls = [y for y in Path(data_dir).rglob(f'*t.yml')]
+    yaml_count = len(yamls)
+    yaml_no = 0
+    for yaml_path in yamls:
+        yaml_no = yaml_no + 1
+        yaml = str(yaml_path)
+        # print(type(yaml))
+        yaml_filtered = re.sub(r'\.yml$', '_filtered.yml', yaml)
+        toml = re.sub(r'\.yml$', '.toml', yaml)
+        # print(toml)
+        if not os.path.exists(toml) or force:
+            print("    %d/%d '%s' ..." % (yaml_no, yaml_count, yaml))
+
+            data = read_yaml_file(yaml)
+
+            filter_yaml(data)
+
+            write_toml_file(toml, data)
+
+if __name__ == '__main__':
+    args_count = len(sys.argv)
+    if args_count == 2 and (sys.argv[1] == "-h" or sys.argv[1] == "--help"):
+        print_help(sys.argv[0])
+        sys.exit(0)
+    elif args_count == 3:
+        filter_okh_yaml(sys.argv[1], sys.argv[2])
+    elif args_count == 2:
+        filter_dir_rec(sys.argv[1], False)
+    else:
+        print_help(sys.argv[0])
+        sys.exit(1)
