@@ -24,7 +24,17 @@ yamls_clean_dir="$build_dir/okh_v1/clean"
 tomls_dir="$build_dir/okh_v2"
 OKH_TOOL="${OKH_TOOL:-$(which okh-tool || true)}"
 okh_tool="${OKH_TOOL:-$(find "$script_dir/target/release" -maxdepth 1 -type f -name okh-tool || true)}"
-krawl="${KRAWL:-$(which krawl)}"
+krawl="${KRAWL:-}"
+if [ -z "$krawl" ]
+then
+	if which krawl > /dev/null
+	then
+		krawl="$(which krawl)"
+	else
+		>&2 echo "ERROR: Failed to find the 'krawl' utility. Try giving its path by setting env var KRAWL."
+		exit 1
+	fi
+fi
 fetch_list=true
 fetch_yamls=true
 clean=true
