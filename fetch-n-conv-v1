@@ -240,10 +240,13 @@ then
 			-e 's|name: $|name: ANONYMOUS|g' \
 			-e 's| bchow(at)seas(dot)upenn(dot)edu| bchow@seas.upenn.edu|g' \
 			-e 's| j\.bonvoisin\[at\]bath\.ac\.uk| j.bonvoisin@bath.ac.uk|g' \
+			-e 's|https://www.appropedia.org/Guava_Auto_CD4/CD4%_System|https://www.appropedia.org/Guava_Auto_CD4/CD4%25_System|g' \
+			-e 's|\\\uFFFD||g' \
 			-e 's|^<|#<|g' \
 			-e 's|^ in <b|# in <b|g' \
-			-e 's|^title: \([^>|]\)|title: >\n  \1|g' \
-			-e 's|^description: \([^>|]\)|description: >\n  \1|g' \
+			-e 's|^title: \+\([^>|]\)|title: >-\n  \1|g' \
+			-e 's|^description: \+\([^>|]\)|description: >-\n  \1|g' \
+			-e 's|^\([a-zA-Z0-9_-]\+\): \+\([>|]\)[^-]|\1: \2-|g' \
 			-e 's|: [.][/]|: |' \
 			-e 's|\s*# required .*$||' \
 			-e 's|: CC |: CC-|' \
