@@ -309,7 +309,7 @@ pub struct Okh {
 
 impl Okh {
     pub fn from_yaml(yaml_str: &str) -> Result<Okh, ParseError> {
-        log::debug!("Parsing YAML to v2 ...");
+        log::debug!("Parsing YAML to v1 ...");
         let parsed = serde_yaml::from_str::<Okh>(yaml_str)?;
 
         if let (None, None, None) = (
