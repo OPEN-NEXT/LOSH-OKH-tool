@@ -11,3 +11,6 @@
 [submodule "resources/osh-file-types"]
 	path = resources/osh-file-types
 	url = https://gitlab.com/OSEGermany/osh-file-types.git
+[submodule "resources/osh-dir-std"]
+	path = resources/osh-dir-std
+	url = https://github.com/hoijui/osh-dir-std.git
