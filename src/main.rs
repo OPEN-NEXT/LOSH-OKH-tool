@@ -7,8 +7,12 @@
 #![allow(dead_code)]
 
 mod cli;
+mod codify;
 mod conversion;
 mod dir;
+mod dir_std;
+mod file_types;
+mod file_types_format;
 mod formats;
 mod generation;
 mod license;
@@ -194,8 +198,8 @@ fn generate(overwrite: bool) -> Result<(), Box<dyn Error>> {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // logger::init(None, (LevelFilter::Trace, LevelFilter::Trace));
-    logger::init(None, (LevelFilter::Info, LevelFilter::Trace));
+    logger::init(None, (LevelFilter::Trace, LevelFilter::Trace));
+    // logger::init(None, (LevelFilter::Info, LevelFilter::Trace));
 
     let arg_matcher = cli::arg_matcher();
     let sub_command_names: Vec<String> = arg_matcher
