@@ -5,7 +5,9 @@
 use std::{fs, path::Path};
 
 use regex::Regex;
+use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 use crate::{
     macros::rgx,
@@ -20,7 +22,7 @@ pub const OKHV: &str = "OKH-LOSHv1.0";
 pub const MANIFEST_FILE_NAME: &str = "okh.toml";
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "kebab-case")]
 pub struct Software {
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -28,33 +30,79 @@ pub struct Software {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release: Option<DSString>,
+    pub release: Option<Url>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "kebab-case")]
 pub struct SubMosh {
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<DSString>,
 
     #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub manifest_file: Option<DSString>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub image: Vec<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub repo: Option<DSString>,
+    pub tsdc: Option<DSString>,
+
+    // #[serde(default)]
+    // #[serde(skip_serializing_if = "Option::is_none")]
+    // pub manifest_file: Option<RelativePathBuf>,
+
+    // #[serde(default)]
+    // #[serde(skip_serializing_if = "Option::is_none")]
+    // pub repo: Option<Url>,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub source: Vec<RelativePathBuf>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub export: Vec<RelativePathBuf>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub auxiliary: Vec<RelativePathBuf>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub part: Vec<SubMosh>,
 }
 
+// #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+// #[serde(rename_all = "kebab-case")]
+// pub struct Meta {
+//     pub source: DSString,
+
+// // [__meta]
+// // source = "github.com"
+// // owner = "KarlK90"
+// // repo = "yaemk-split-kb"
+// // path = "okh.toml"
+//     #[serde(default)]
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub owner: Option<DSString>,
+
+//     #[serde(default)]
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub repo: Option<DSString>,
+
+//     #[serde(default)]
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub path: Option<DSString>,
+// }
+
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "kebab-case")]
 pub struct Okh {
     pub okhv: DSString,
 
     pub name: DSString,
 
-    pub repo: DSString,
+    pub repo: Url,
 
     pub version: DSString,
 
@@ -64,19 +112,23 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub upload_method: Option<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub organisation: Option<DSString>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub readme: Option<DSString>,
+    pub readme: Option<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub contribution_guide: Option<DSString>,
+    pub contribution_guide: Option<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub image: Vec<DSString>,
+    pub image: Vec<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -84,7 +136,7 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub attestation: Vec<DSString>,
+    pub attestation: Vec<Url>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -100,11 +152,11 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub bom: Option<DSString>,
+    pub bom: Option<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release: Option<DSString>,
+    pub release: Option<Url>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -112,7 +164,7 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub fork_of: Option<DSString>,
+    pub fork_of: Option<Url>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -128,11 +180,11 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user_manual: Option<DSString>,
+    pub user_manual: Option<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub manufacturing_instructions: Vec<DSString>,
+    pub manufacturing_instructions: Vec<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -144,19 +196,22 @@ pub struct Okh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub source: Vec<DSString>,
+    pub source: Vec<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub export: Vec<DSString>,
+    pub export: Vec<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub auxiliary: Vec<DSString>,
+    pub auxiliary: Vec<RelativePathBuf>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub part: Vec<SubMosh>,
+    // #[serde(default)]
+    // #[serde(rename = "__meta")]
+    // pub __meta: Meta,
 }
 
 impl Okh {
