@@ -47,7 +47,7 @@ fn version(v1: &v1::Okh) -> Result<String, Error> {
         Err(Error::InsufficientData {
             msg: "'version' is required for OKH LOSH",
         }),
-        |version| Ok(version.clone()),
+        |version| Ok(version.trim().to_string()),
     )
 }
 
@@ -94,13 +94,13 @@ fn function(v1: &v1::Okh) -> String {
         if !function.is_empty() {
             function.push('\n');
         }
-        function.push_str(intended_use);
+        function.push_str(intended_use.trim());
     }
     if let Some(health_safety_notice) = &v1.health_safety_notice {
         if !function.is_empty() {
             function.push('\n');
         }
-        function.push_str(health_safety_notice);
+        function.push_str(health_safety_notice.trim());
     }
     function
 }
@@ -150,14 +150,14 @@ fn licensor(v1: &v1::Okh) -> Result<String, Error> {
             (name, email) => {
                 let mut licensor_str = String::new();
                 if let Some(name) = name {
-                    licensor_str.push_str(name);
+                    licensor_str.push_str(name.trim());
                 }
                 if let Some(email) = email {
                     if !licensor_str.is_empty() {
                         licensor_str.push(' ');
                     }
                     licensor_str.push('<');
-                    licensor_str.push_str(email);
+                    licensor_str.push_str(email.trim());
                     licensor_str.push('>');
                 }
                 Ok(licensor_str)
@@ -182,10 +182,10 @@ fn standard(v1: &v1::Okh) -> Vec<v2::DSString> {
     let mut standard = Vec::<v2::DSString>::new();
     for strd in &v1.standards_used {
         if !strd.reference.is_empty() {
-            standard.push(strd.reference.clone());
+            standard.push(strd.reference.trim().to_string());
         }
         if !strd.standard_title.is_empty() {
-            standard.push(strd.standard_title.clone());
+            standard.push(strd.standard_title.trim().to_string());
         }
     }
     standard
@@ -231,7 +231,7 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
     let standard_compliance = v1
         .standards_used
         .iter()
-        .map(|std| std.standard_title.clone())
+        .map(|std| std.standard_title.trim().to_string())
         .collect();
     let cpc_patent_class = None;
     let tsdc = None;
@@ -254,7 +254,7 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
 
     Ok(v2::Okh {
         okhv: v2::OKHV.to_owned(),
-        name: v1.title,
+        name: v1.title.trim().to_string(),
         organisation,
         readme,
         contribution_guide,
@@ -265,7 +265,7 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
         version,
         image,
         repo,
-        documentation_language: v1.documentation_language,
+        documentation_language: v1.documentation_language.map(|s| s.trim().to_string()),
         bom: v1.bom,
         release: v1.archive_download,
         timestamp,
