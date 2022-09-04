@@ -121,11 +121,7 @@ pub fn find_root_files(proj_root: &Path) -> (ORelPath, ORelPath, ORelPath) {
         .map(Option::unwrap)
         .map(RelativePathBuf::from);
 
-    (
-        rel_paths.next(),
-        rel_paths.next(),
-        rel_paths.next(),
-    )
+    (rel_paths.next(), rel_paths.next(), rel_paths.next())
 }
 
 pub fn find_rec_files(proj_root: &Path) -> Vec<Vec<RelativePathBuf>> {
