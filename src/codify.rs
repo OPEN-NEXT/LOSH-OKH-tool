@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2022 Robin Vobruba <hoijui.quaero@gmail.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-/// Helps in automatic code generation for initializing structs and enums.
-/// This is mostly used in this way:
-/// 1. in `build.rs`, load some data from resource files into struct, using serde
-/// 2. in `build.rs`, call the `Codify::init_code()` function on that data,
-///    creating init code, and write that code into a `*.rs` file
-/// 3. load/use that `*.rs` file at compile-time
+//! Helps in automatic code generation for initializing structs and enums.
+//! This is mostly used in this way:
+//! 1. in `build.rs`, load some data from resource files into struct, using serde
+//! 2. in `build.rs`, call the `Codify::init_code()` function on that data,
+//!    creating init code, and write that code into a `*.rs` file
+//! 3. load/use that `*.rs` file at compile-time
 
 use std::{borrow::Cow, collections::HashMap};
 

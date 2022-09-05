@@ -12,12 +12,12 @@ use std::{
     process,
 };
 
-#[path = "src/file_types_format.rs"]
-mod file_types_format;
 #[path = "src/codify.rs"]
 mod codify;
 #[path = "src/dir_std/format.rs"]
 mod dir_std;
+#[path = "src/file_types_format.rs"]
+mod file_types_format;
 
 use crate::codify::Codify;
 use file_types_format::FileFormat;
