@@ -1,0 +1,206 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2022 Robin Vobruba <hoijui.quaero@gmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+# See the output of "$0 -h" for details.
+
+# Exit immediately on each error and unset variable;
+# see: https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+#set -Eeu
+
+script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+script_name="$(basename "$0")"
+
+APP_NAME="appro2loshrdf"
+SRC_ROOT=target/okh_v2
+DST_ROOT=target/losh-crawled/RDF
+#DST_ROOT=target/losh-crawled/RDF/appropedia.org
+SITE_APPROPEDIA="appropedia.org"
+SITE_FIELD_READY="field-ready-projects.openknowhow.org"
+SITE_GITLAB_COM="gitlab.com"
+SITE_GITHUB="github.com"
+SITES=(
+	"$SITE_APPROPEDIA"
+	"$SITE_FIELD_READY"
+	"$SITE_GITLAB_COM"
+	"$SITE_GITHUB"
+)
+
+clean=false
+force=false
+
+#gitlab_com____openflexure____openflexure-simple-illumination____-____raw____master____okh.toml
+#gitlab_com____openflexure____openflexure-simple-illumination____-____raw____master____okh.ttl
+#raw_githubusercontent_com____7B-Things____braille-signage-generator____main____okh.toml
+#raw_githubusercontent_com____7B-Things____braille-signage-generator____main____okh.ttl
+#field-ready-projects_openknowhow_org____manifests____okh-WA016.toml
+#field-ready-projects_openknowhow_org____manifests____okh-WA016.ttl
+
+function print_help() {
+
+	echo -e ""
+	echo -e "$APP_NAME - Copies appropedia.org fetcher content to the losh-rdf repo."
+	echo -e ""
+	echo -e "Usage:"
+	echo -e "\t$script_name [OPTION...]"
+	echo -e "Options:"
+	echo -e "\t-c, --clean"
+	echo -e "\t\tRemoves previously results of this conversion from the losh-rdf repo,"
+	echo -e "\t\tif the repo is clean and synced ot the remote, or if --force was supplied"
+	echo -e "\t-f, --force"
+	echo -e "\t\tDANGER: This may delete important data! See --clean"
+	echo -e "\t-h, --help"
+	echo -e "\t\tPrint this usage help and exit"
+	echo -e ""
+}
+
+function ensure_empty_dir() {
+
+	local dir="$1"
+
+	mkdir -p "$dir"
+	if ! rmdir "$dir" 2> /dev/null
+	then
+		>&2 echo "Dir '$dir' is not empty. Please empty it before instructing this script to move sutff there."
+		exit 1
+	fi
+	mkdir -p "$dir"
+}
+
+function file2site_and_name() {
+
+	file_name="$(basename --suffix ".ttl" "$1")"
+
+	case "$file_name" in
+		www_appropedia_org____generateOpenKnowHowManifest_php_title_*)
+			site="$SITE_APPROPEDIA"
+			name="${file_name#www_appropedia_org____generateOpenKnowHowManifest_php_title_}"
+			;;
+		field-ready-projects_openknowhow_org____manifests____okh-*)
+			site="$SITE_FIELD_READY"
+			name="${file_name#field-ready-projects_openknowhow_org____manifests____okh-}"
+			;;
+		gitlab_com____*)
+			site="$SITE_GITLAB_COM"
+			name="${file_name#gitlab_com____}"
+			name="${name%____-____raw____*}"
+			;;
+		raw_githubusercontent_com____*)
+			site="$SITE_GITHUB"
+			name="$(echo "$file_name" | sed -e 's|^raw_githubusercontent_com____\(.*\)____.\+____.\+$|\1|')"
+			;;
+		*)
+			>&2 echo "ERROR: Unknown source site for: '$file_name'"
+			exit 1
+			;;
+	esac
+
+	printf "%s '%s'" "$site" "$name"
+}
+
+function convert_to_loshrdf() {
+
+	for site in "${SITES[@]}"
+	do
+		dst_site="$DST_ROOT/$site"
+		if ! $force
+		then
+			printf "" #ensure_empty_dir "$dst_site"
+		fi
+	done
+
+	for src_ttl in "$SRC_ROOT"/*.ttl
+	do
+		site_and_name="$(file2site_and_name "$src_ttl")"
+		site="${site_and_name% *}"
+		name="${site_and_name#* \'}"
+		name="${name%\'}"
+		dst_site="$DST_ROOT/$site"
+
+		src_toml="${src_ttl%ttl}toml"
+		echo "Project ($site) '$name' ..."
+		#continue
+
+		dst_dir="$dst_site/$name"
+		mkdir -p "$dst_dir"
+		cp "$src_ttl" "$dst_dir/project.ttl"
+		cp "$src_toml" "$dst_dir/project.toml"
+	done
+}
+
+function clean_loshrdf() {
+
+	>&2 echo "ERROR: Cleaning is not implemented yet. Please empty the following directories manually, after making sure the current content is backed-up/synced to the git remote."
+	for site in "${SITES[@]}"
+	do
+		>&2 echo "$DST_ROOT/$site"
+	done
+	exit 1
+
+	if ! $force
+	then
+		# TODO Use git-check-repo, but it needs fixing first .. might not b eviable.. missing git-stash check still, and maybe more.
+		if ! $is_clean
+		then
+			>&2 echo "ERROR: You chose to play sounds, but the sound file '$SOUND_INCONSISTENCY' does not exist."
+			exit 1
+		fi
+	fi
+
+	for site in "${SITES[@]}"
+	do
+		dst_site="$DST_ROOT/$site"
+		ensure_empty_dir "$dst_site"
+	done
+
+	for src_ttl in "$SRC_ROOT"/*.ttl
+	do
+		site_and_name="$(file2site_and_name "$src_ttl")"
+		site="${site_and_name% *}"
+		name="${site_and_name#* \'}"
+		name="${name%\'}"
+		dst_site="$DST_ROOT/$site"
+
+		src_toml="${src_ttl%ttl}toml"
+		echo "Project ($site) '$name' ..."
+		continue
+
+		dst_dir="$dst_site/$name"
+		mkdir "$dst_dir"
+		cp "$src_ttl" "$dst_dir/project.ttl"
+		cp "$src_toml" "$dst_dir/project.toml"
+	done
+}
+
+# Process command line arguments
+while [[ $# -gt 0 ]]
+do
+	arg="$1"
+	shift # $2 -> $1, $3 -> $2, ...
+
+	case "$arg" in
+		-c|--clean)
+			clean=true
+			;;
+		-f|--force)
+			force=true
+			;;
+		-h|--help)
+			print_help
+			exit 0
+			;;
+		*) # non-/unknown option
+			>&2 echo "Unknown flag: '$arg'"
+			exit 1
+			;;
+	esac
+done
+
+if $clean
+then
+	clean_loshrdf
+else
+	convert_to_loshrdf
+fi
