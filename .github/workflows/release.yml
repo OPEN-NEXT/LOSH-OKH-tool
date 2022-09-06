@@ -69,7 +69,6 @@ jobs:
       # systems.
       CARGO: cargo
       # When CARGO is set to CROSS, this is set to `--target matrix.target`.
-      TARGET_FLAG: ""
     strategy:
       matrix:
         # build: [linux, linux-arm, macos, win-msvc, win-gnu, win32-msvc]
@@ -116,11 +115,10 @@ jobs:
       if: env.OUR_VERSION == ''
       run: scripts/env
 
-    #- name: Install packages (Ubuntu)
-    #  if: matrix.os == 'ubuntu-18.04'
-    #  run: |
-    #    # ci/ubuntu-install-packages
-    #    scripts/install_deps_ubuntu
+    - name: Install packages (Ubuntu)
+      if: matrix.os == 'ubuntu-18.04'
+      run: |
+        scripts/install_deps_ubuntu
 
     # - name: Install packages (macOS)
     #   if: matrix.os == 'macos-latest'
@@ -150,7 +148,7 @@ jobs:
         echo "target dir is: ${{ env.TARGET_DIR }}"
 
     - name: Build and strip release binary
-      run: scripts/build
+      run: scripts/build --skip-strip
 
     # - name: Strip release binary (linux and macos)
     #   if: matrix.build == 'linux' || matrix.build == 'macos'
