@@ -313,7 +313,7 @@ impl Okh {
     pub fn main_url(&self) -> Option<&Url> {
         self.project_link
             .as_ref()
-            .or_else(|| self.documentation_home.as_ref())
+            .or(self.documentation_home.as_ref())
     }
 }
 

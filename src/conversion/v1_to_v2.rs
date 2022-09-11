@@ -64,7 +64,7 @@ fn version(v1: &v1::Okh) -> Result<String, Error> {
 fn repo(v1: &v1::Okh) -> Result<Url, Error> {
     v1.documentation_home
         .as_ref()
-        .or_else(|| v1.project_link.as_ref())
+        .or(v1.project_link.as_ref())
         .map_or(
         Err(Error::InsufficientData {
             msg: "OKH v1 'documentation_home' or 'project_link' is required to convert to OKH LOSH",
