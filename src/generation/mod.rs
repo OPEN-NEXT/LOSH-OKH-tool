@@ -33,7 +33,7 @@ pub enum Error {
     Io(#[from] std::io::Error),
 
     #[error("Misc error.")]
-    General(#[from] Box<dyn std::error::Error>),
+    General(#[from] Box<dyn std::error::Error + Send + Sync>),
 
     #[error("Failed to serialize to TOML/YAML/similar.")]
     Serialization(#[from] SerError),
