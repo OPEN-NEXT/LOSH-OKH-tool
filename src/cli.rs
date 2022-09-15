@@ -10,6 +10,12 @@ pub const SC_N_VALIDATE: &str = "val";
 pub const A_P_INPUT: &str = "INPUT";
 pub const A_P_OUTPUT: &str = "OUTPUT";
 
+pub const A_L_VERSION: &str = "version";
+pub const A_S_VERSION: char = 'V';
+
+pub const A_L_QUIET: &str = "quiet";
+pub const A_S_QUIET: char = 'q';
+
 pub const A_L_RECURSIVE: &str = "recursive";
 pub const A_S_RECURSIVE: char = 'r';
 
@@ -50,6 +56,24 @@ fn arg_recursive() -> Arg<'static> {
         .takes_value(false)
         .short(A_S_RECURSIVE)
         .long(A_L_RECURSIVE)
+        .required(false)
+}
+
+fn arg_version() -> Arg<'static> {
+    Arg::new(A_L_VERSION)
+        .help("Print version information. May be combined with --quiet, to really only output the version string.")
+        .takes_value(false)
+        .short(A_S_VERSION)
+        .long(A_L_VERSION)
+        .required(false)
+}
+
+fn arg_quiet() -> Arg<'static> {
+    Arg::new(A_L_QUIET)
+        .help("None or much less command lien output")
+        .takes_value(false)
+        .short(A_S_QUIET)
+        .long(A_L_QUIET)
         .required(false)
 }
 
@@ -111,9 +135,12 @@ pub fn arg_matcher() -> App<'static> {
         .setting(AppSettings::HelpExpected)
         .setting(AppSettings::InferLongArgs)
         .setting(AppSettings::PropagateVersion)
-        .setting(AppSettings::SubcommandRequired)
+        .setting(AppSettings::SubcommandsNegateReqs)
         .setting(AppSettings::UseLongFormatForHelpSubcommand)
+        .disable_version_flag(true)
         .bin_name("okh-tool")
+        .arg(arg_version())
+        .arg(arg_quiet())
         .subcommand(subcom_convert())
         .subcommand(subcom_validate())
         .subcommand(subcom_generate());

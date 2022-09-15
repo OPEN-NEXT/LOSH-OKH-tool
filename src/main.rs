@@ -30,6 +30,7 @@ use std::{
 };
 
 use clap::App;
+use cli::{A_L_QUIET, A_L_VERSION};
 use formats::{v1, v2};
 use log::LevelFilter;
 
@@ -45,6 +46,7 @@ fn convert(
     recursive: bool,
     cont: bool,
     overwrite: bool,
+    quiet: bool,
 ) -> Result<(), Box<dyn Error>> {
     if input_path.is_file() {
         let output_path = if let Some(output_path) = output_path {
@@ -132,6 +134,7 @@ fn validate(
     recursive: bool,
     okhv1: Option<bool>,
     cont: bool,
+    quiet: bool,
 ) -> Result<(), Box<dyn Error>> {
     if input_path.is_file() {
         let okhv1 = match okhv1 {
@@ -192,14 +195,13 @@ fn validate(
     }
 }
 
-fn generate(overwrite: bool) -> Result<(), Box<dyn Error>> {
+fn generate(overwrite: bool, quiet: bool) -> Result<(), Box<dyn Error>> {
     let proj_root = env::current_dir()?;
     Ok(generation::okh_losh_toml(&proj_root, overwrite)?)
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    logger::init(None, (LevelFilter::Trace, LevelFilter::Trace));
-    // logger::init(None, (LevelFilter::Info, LevelFilter::Trace));
+    logger::init(None, (LevelFilter::Info, LevelFilter::Trace));
 
     let arg_matcher = cli::arg_matcher();
     let sub_command_names: Vec<String> = arg_matcher
@@ -208,6 +210,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(ToOwned::to_owned)
         .collect();
     let args = &arg_matcher.get_matches();
+    let quiet = args.contains_id(A_L_QUIET);
+    let version = args.contains_id(A_L_VERSION);
+    if version {
+        if !quiet {
+            print!("{} ", clap::crate_name!());
+        }
+        println!("{}", clap::crate_version!());
+        std::process::exit(0);
+    }
+    if sub_command_names.is_empty() {
+        log::error!(
+            "'{}' requires a subcommand but none was provided",
+            clap::crate_name!()
+        );
+        cli::arg_matcher().print_help()?;
+        std::process::exit(1);
+    }
     for sub_com_name in &sub_command_names {
         if let Some(sub_com) = args.subcommand_matches(sub_com_name) {
             if sub_com_name == cli::SC_N_CONVERT {
@@ -220,7 +239,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let recursive = sub_com.is_present(cli::A_L_RECURSIVE);
                 let cont = sub_com.is_present(cli::A_L_CONTINUE_ON_ERROR);
                 let overwrite = sub_com.is_present(cli::A_L_OVERWRITE);
-                convert(input_path, output_path, recursive, cont, overwrite)?;
+                convert(input_path, output_path, recursive, cont, overwrite, quiet)?;
             } else if sub_com_name == cli::SC_N_VALIDATE {
                 let input_path = sub_com
                     .value_of(cli::A_P_INPUT)
@@ -231,10 +250,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .value_of(cli::A_L_OKH_VERSION)
                     .map(|ver| ver == "v1");
                 let cont = sub_com.is_present(cli::A_L_CONTINUE_ON_ERROR);
-                validate(input_path, recursive, okhv1, cont)?;
+                validate(input_path, recursive, okhv1, cont, quiet)?;
             } else if sub_com_name == cli::SC_N_GENERATE {
                 let overwrite = sub_com.is_present(cli::A_L_OVERWRITE);
-                generate(overwrite)?;
+                generate(overwrite, quiet)?;
             } else {
                 main_err!(format!("Sub-command not implemented: '{}'", sub_com_name));
             }
