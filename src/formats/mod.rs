@@ -38,7 +38,7 @@ pub enum SerError {
 
 /// A (serde compatible) property type,
 /// representing either a URL or a (repo relative) path.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Locator {
     Url(Url),
     Path(RelativePathBuf),

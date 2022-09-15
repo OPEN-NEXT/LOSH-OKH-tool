@@ -75,6 +75,7 @@ macro_rules! impl_oxrl {
     Clone,
     Debug,
     PartialEq,
+    Eq,
     Serialize,
     Deserialize,
 )]
@@ -107,6 +108,7 @@ impl_oxrl!(Otrl, "OTRL", R_OTRL_PREFIX);
     Clone,
     Debug,
     PartialEq,
+    Eq,
     Serialize,
     Deserialize,
 )]

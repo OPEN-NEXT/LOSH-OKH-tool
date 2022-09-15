@@ -21,7 +21,7 @@ pub type DSString = String;
 pub const OKHV: &str = "OKH-LOSHv1.0";
 pub const MANIFEST_FILE_NAME: &str = "okh.toml";
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct Software {
     #[serde(default)]
@@ -33,7 +33,7 @@ pub struct Software {
     pub release: Option<Url>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct SubMosh {
     #[serde(default)]
@@ -72,7 +72,7 @@ pub struct SubMosh {
     pub part: Vec<SubMosh>,
 }
 
-// #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+// #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 // #[serde(rename_all = "kebab-case")]
 // pub struct Meta {
 //     pub source: DSString,
@@ -95,7 +95,7 @@ pub struct SubMosh {
 //     pub path: Option<DSString>,
 // }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Okh {
     pub okhv: DSString,

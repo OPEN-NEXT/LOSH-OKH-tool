@@ -15,7 +15,7 @@ use super::{Locator, ParseError, SerError};
 
 type DSString = String;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct Document {
     #[serde(default)]
@@ -25,7 +25,7 @@ pub struct Document {
     pub path: Option<Locator>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct License {
     /// The license under which the hardware is released
@@ -44,7 +44,7 @@ pub struct License {
     pub software: Option<DSString>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct Person {
     #[serde(default)]
@@ -66,7 +66,7 @@ pub struct Person {
     pub social: Vec<Social>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct Standard {
     #[serde(default)]
@@ -76,7 +76,7 @@ pub struct Standard {
     pub standard_title: DSString,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct OtherThing {
     #[serde(default)]
@@ -92,7 +92,7 @@ pub struct OtherThing {
     pub web: Option<Url>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct OtherThingWithLang {
     #[serde(default)]
@@ -122,7 +122,7 @@ fn default_okh_manifest_version() -> Option<DSString> {
 /// It is based on the contents of the quasi-schema/stnadard by OHK themselfs,
 /// which can be found here:
 /// <https://git.iostud.io/makernet/iop-cdb/-/blob/dev/server/assets/okh.okhdf>
-#[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 // #[serde(default)]
 pub struct Okh {
