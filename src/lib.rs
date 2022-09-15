@@ -2,10 +2,6 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-//#![warn(clippy::all)]
-//#![warn(rust_2018_idioms)]
-#![allow(dead_code)]
-
 extern crate jsonschema;
 extern crate log;
 extern crate num_derive;
