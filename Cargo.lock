@@ -1949,7 +1949,7 @@ dependencies = [
 
 [[package]]
 name = "okh-tool"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "chrono",
  "clap 3.2.20",
