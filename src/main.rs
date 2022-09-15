@@ -201,7 +201,11 @@ fn generate(overwrite: bool, quiet: bool) -> Result<(), Box<dyn Error>> {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    logger::init(None, (LevelFilter::Info, LevelFilter::Trace));
+    if cfg!(debug_assertions) {
+        logger::init(None, (LevelFilter::Trace, LevelFilter::Trace));
+    } else {
+        logger::init(None, (LevelFilter::Info, LevelFilter::Trace));
+    }
 
     let arg_matcher = cli::arg_matcher();
     let sub_command_names: Vec<String> = arg_matcher
