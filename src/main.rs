@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #![warn(clippy::all)]
-#![warn(rust_2018_idioms)]
+#![warn(rust_2021_compatibility)]
 #![allow(dead_code)]
+#![allow(clippy::struct_excessive_bools)]
 
 mod cli;
 mod codify;
