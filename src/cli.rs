@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 use clap::{app_from_crate, App, AppSettings, Arg, ValueHint};
+use const_format::formatcp;
 use std::env;
 
 pub const SC_N_VALIDATE: &str = "val";
@@ -31,6 +32,8 @@ pub const A_L_OVERWRITE: &str = "overwrite";
 pub const A_S_OVERWRITE: char = 'o';
 
 pub const SC_N_GENERATE: &str = "gen";
+
+pub const OKH_MANIFEST_FILE_NAME: &str = "okh.toml";
 
 fn arg_input() -> Arg<'static> {
     Arg::new(A_P_INPUT)
@@ -126,7 +129,7 @@ fn subcom_validate() -> App<'static> {
 
 fn subcom_generate() -> App<'static> {
     App::new(SC_N_GENERATE)
-    .about("Generates a starter-manifest file ('{}', OKH-LOSH) for the project at CWD. You will need to manually replace some TODO values within it.")
+    .about(formatcp!("Generates a starter-manifest file ('{}', OKH-LOSH) for the project at CWD. You will need to manually replace some values within it.", OKH_MANIFEST_FILE_NAME))
     .arg(arg_overwrite())
 }
 
