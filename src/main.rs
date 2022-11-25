@@ -9,10 +9,8 @@
 #![allow(clippy::fn_params_excessive_bools)]
 
 mod cli;
-mod codify;
 mod conversion;
 mod dir;
-mod dir_std;
 mod file_types;
 mod file_types_format;
 mod formats;

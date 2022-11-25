@@ -261,6 +261,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "codify"
+version = "0.1.0"
+source = "git+https://github.com/hoijui/codify-rs.git#0aabf56b8099feb7e3e7050a9435786507bb1032"
+
+[[package]]
 name = "const_format"
 version = "0.2.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1953,6 +1958,7 @@ version = "0.3.1"
 dependencies = [
  "chrono",
  "clap 3.2.20",
+ "codify",
  "const_format",
  "csv",
  "git2",

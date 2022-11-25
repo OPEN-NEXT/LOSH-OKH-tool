@@ -17,7 +17,6 @@ extern crate strum_macros;
 extern crate thiserror;
 extern crate toml;
 
-mod codify;
 mod conversion;
 mod formats;
 mod license;
