@@ -12,6 +12,12 @@ SPDX-License-Identifier: CC0-1.0
 [![REUSE status](
     https://api.reuse.software/badge/github.com/OPEN-NEXT/LOSH-OKH-tool)](
     https://api.reuse.software/info/github.com/OPEN-NEXT/LOSH-OKH-tool)
+[![In cooperation with FabCity Hamburg](
+    https://custom-icon-badges.demolab.com/badge/-FCHH-dddddd.svg?logo=fc_logo)](
+    https://fabcity.hamburg)
+[![In cooperation with Open Source Ecology Germany](
+    https://custom-icon-badges.demolab.com/badge/-OSEG-555555.svg?logo=oseg_logo)](
+    https://opensourceecology.de)
 
 * LOSH: _A **L**ibrary of **O**pen **S**ource **H**ardware -
   technical documentation in an open graph database._
