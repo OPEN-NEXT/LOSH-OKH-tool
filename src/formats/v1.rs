@@ -318,15 +318,16 @@ impl Okh {
 }
 
 impl Okh {
-    pub fn from_yaml(yaml_str: &str) -> Result<Okh, ParseError> {
+    pub fn from_yaml(yaml_str: &str) -> Result<Self, ParseError> {
         log::debug!("Parsing YAML to v1 ...");
-        let parsed = serde_yaml::from_str::<Okh>(yaml_str)?;
+        let parsed = serde_yaml::from_str::<Self>(yaml_str)?;
 
-        if let (None, None, None) = (
+        if (
             &parsed.license.documentation,
             &parsed.license.hardware,
             &parsed.license.software,
-        ) {
+        ) == (&None, &None, &None)
+        {
             panic!("at least one of the three licenses (documentation, hardware or software) has to be set");
         }
 

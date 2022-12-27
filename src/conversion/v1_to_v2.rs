@@ -43,13 +43,10 @@ fn git_commit_date() -> Result<Option<i64>, Error> {
 fn shorten_to_repo_url(manifest_url: &Url) -> Option<Url> {
     let repo_path = RelativePathBuf::from(manifest_url.path());
     let mut repo_url = manifest_url.clone();
-    match repo_path.parent() {
-        Some(parent_path) => {
-            repo_url.set_path(&parent_path.to_string());
-            Some(repo_url)
-        }
-        None => None,
-    }
+    repo_path.parent().map(|parent_path| {
+        repo_url.set_path(&parent_path.to_string());
+        repo_url
+    })
 }
 
 fn version(v1: &v1::Okh) -> Result<String, Error> {

@@ -96,7 +96,7 @@ impl TryFrom<&str> for Source {
         match val {
             "source" => Ok(Self::Source),
             "export" => Ok(Self::Export),
-            _ => Err(format!("Invalid Source column value: '{}'", val)),
+            _ => Err(format!("Invalid Source column value: '{val}'")),
         }
     }
 }

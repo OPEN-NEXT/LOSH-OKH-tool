@@ -348,10 +348,8 @@ pub fn okh_losh_toml_part(
         );
         Some(run_projvar(repo_root)?)
     };
-    let environment = match environment {
-        Some(environment) => environment,
-        None => owned_env.as_ref().unwrap(),
-    };
+    let environment =
+        environment.map_or_else(|| owned_env.as_ref().unwrap(), |environment| environment);
     let module_dir = sub_part.to_path(repo_root);
     // println!("XXX ran projvar in '{}' - '{}'.", repo_root.display(), sub_part);
 

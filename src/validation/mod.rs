@@ -58,7 +58,7 @@ pub struct JsonSchemaValidationError {
 
 impl<'a> From<jsonschema::ValidationError<'a>> for JsonSchemaValidationError {
     fn from(err: jsonschema::ValidationError<'a>) -> Self {
-        JsonSchemaValidationError {
+        Self {
             instance: err.instance.into_owned(),
             kind: err.kind,
             instance_path: err.instance_path,
@@ -87,7 +87,7 @@ impl fmt::Display for JsonSchemaValidationErrorCollection {
 
 impl<'a> From<jsonschema::ErrorIterator<'a>> for JsonSchemaValidationErrorCollection {
     fn from(err: jsonschema::ErrorIterator<'a>) -> Self {
-        JsonSchemaValidationErrorCollection {
+        Self {
             failed_reqs: err.map(JsonSchemaValidationError::from).collect(),
         }
     }
