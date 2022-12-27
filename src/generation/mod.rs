@@ -187,7 +187,7 @@ fn find_parts(
             let sub_part_dir = toml_path.parent();
             if let Some(sub_part_dir) = sub_part_dir {
                 if sub_part_dir != cwd {
-                    println!("XXX part_dir: {}", sub_part_dir);
+                    println!("XXX part_dir: {sub_part_dir}");
                     sub_part_dirs
                         .entry(sub_part_dir.to_relative_path_buf())
                         .or_insert_with(HashSet::new)
@@ -215,7 +215,7 @@ fn find_parts(
     let mut part = vec![];
     for (sub_part_dir, files) in sub_part_dirs {
         let manifest_file = sub_part_dir.join(okh_toml_name);
-        let sub_part_path = sub_part_dir.to_path(&module_dir);
+        let sub_part_path = sub_part_dir.to_path(module_dir);
         if !files.contains(&okh_toml_name_rel_path) {
             // generate child okh.toml file
             if is_git_submodule(&sub_part_path) {
@@ -390,7 +390,7 @@ pub fn okh_losh_toml_part(
 
         let content = okh_losh.to_toml()?;
 
-        fs::write(manifest_file, format!("{}\n\n{}", header, content))?;
+        fs::write(manifest_file, format!("{header}\n\n{content}"))?;
     } else {
         log::warn!(
             "Skipped writing '{}': File already exists. See `--overwrite`.",

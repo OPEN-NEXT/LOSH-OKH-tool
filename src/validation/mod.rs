@@ -79,7 +79,7 @@ impl fmt::Display for JsonSchemaValidationErrorCollection {
         f.write_str("\n# Validation error(s):\n")?;
         for failure in &self.failed_reqs {
             // f.write_fmt(format_args!("Validation error: {}\nInstance path: {}", failure, failure.instance_path))?;
-            f.write_fmt(format_args!("{}", failure))?;
+            f.write_fmt(format_args!("{failure}"))?;
         }
         Ok(())
     }

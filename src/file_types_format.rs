@@ -33,7 +33,7 @@ impl TryFrom<&str> for Open {
             "open" => Ok(Self::Open),
             "proprietary" => Ok(Self::Proprietary),
             "unknown" => Ok(Self::Unknown),
-            _ => Err(format!("Invalid Open column value: '{}'", val)),
+            _ => Err(format!("Invalid Open column value: '{val}'")),
         }
     }
 }
@@ -67,7 +67,7 @@ impl TryFrom<&str> for Text {
             "binary" => Ok(Self::Binary),
             "both" => Ok(Self::Both),
             "unknown" => Ok(Self::Unknown),
-            _ => Err(format!("Invalid Text column value: '{}'", val)),
+            _ => Err(format!("Invalid Text column value: '{val}'")),
         }
     }
 }

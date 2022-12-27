@@ -77,6 +77,6 @@ pub fn ensure_spdx_license_id(license_id: &str) -> String {
     if validate_spdx_expr(license_id).is_ok() {
         license_id.to_owned()
     } else {
-        format!("LicenseRef-{}", license_id)
+        format!("LicenseRef-{license_id}")
     }
 }
