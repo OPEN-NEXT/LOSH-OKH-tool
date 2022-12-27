@@ -206,6 +206,16 @@ fn generate(overwrite: bool, quiet: bool) -> Result<(), Box<dyn Error>> {
     Ok(generation::okh_losh_toml(&proj_root, overwrite)?)
 }
 
+fn print_version_and_exit(quiet: bool) {
+    #![allow(clippy::print_stdout)]
+
+    if !quiet {
+        print!("{} ", clap::crate_name!());
+    }
+    println!("{}", okh_tool::VERSION);
+    std::process::exit(0);
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     if cfg!(debug_assertions) {
         logger::init(None, (LevelFilter::Trace, LevelFilter::Trace));
@@ -223,11 +233,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let quiet = args.get_flag(cli::A_L_QUIET);
     let version = args.get_flag(cli::A_L_VERSION);
     if version {
-        if !quiet {
-            print!("{} ", clap::crate_name!());
-        }
-        println!("{}", clap::crate_version!());
-        std::process::exit(0);
+        print_version_and_exit(quiet);
     }
     if sub_command_names.is_empty() {
         log::error!(

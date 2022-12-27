@@ -1991,6 +1991,7 @@ dependencies = [
  "codify",
  "const_format",
  "csv",
+ "git-version",
  "git2",
  "globset",
  "jsonschema",

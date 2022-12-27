@@ -18,6 +18,7 @@ clap = { version = "4.0", features = ["cargo"] }
 codify = { git = "https://github.com/hoijui/codify-rs.git" }
 const_format = "0.2"
 csv = "1.1"
+git-version = "0.3"
 git2 = { version = "0.15", default-features = false } # "default-features = false" is required for MUSL compatibility, to get rid of OpenSSL
 globset = "0.4"
 jsonschema = "0.16"
