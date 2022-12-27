@@ -344,9 +344,19 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
     })
 }
 
-pub fn convert_file(yaml_file: &Path, toml_file: &Path) -> Result<(), Error> {
-    log::info!("OKH v1 (YAML) input file:  {}", yaml_file.display());
-    log::info!("OKH v2 (TOML) output file: {}", toml_file.display());
+pub fn convert_file<IP, OP>(yaml_file: IP, toml_file: OP) -> Result<(), Error>
+where
+    IP: AsRef<Path>,
+    OP: AsRef<Path>,
+{
+    log::info!(
+        "OKH v1 (YAML) input file:  {}",
+        yaml_file.as_ref().display()
+    );
+    log::info!(
+        "OKH v2 (TOML) output file: {}",
+        toml_file.as_ref().display()
+    );
 
     let v1 = v1::Okh::from_yaml_file(yaml_file)?;
     let v2 = convert(v1)?;

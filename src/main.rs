@@ -29,8 +29,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use clap::App;
-use cli::{A_L_QUIET, A_L_VERSION};
+use clap::Command;
 use formats::{v1, v2};
 use log::LevelFilter;
 
@@ -40,25 +39,29 @@ macro_rules! main_err {
     };
 }
 
-fn convert(
-    input_path: PathBuf,
-    output_path: Option<&Path>,
+fn convert<IP, OP>(
+    input_path: IP,
+    output_path: Option<OP>,
     recursive: bool,
     cont: bool,
     overwrite: bool,
     quiet: bool,
-) -> Result<(), Box<dyn Error>> {
-    if input_path.is_file() {
+) -> Result<(), Box<dyn Error>>
+where
+    IP: AsRef<Path>,
+    OP: AsRef<Path>,
+{
+    if input_path.as_ref().is_file() {
         let output_path = if let Some(output_path) = output_path {
-            if output_path.exists() {
-                if output_path.is_file() {
-                    output_path.to_path_buf()
+            if output_path.as_ref().exists() {
+                if output_path.as_ref().is_file() {
+                    output_path.as_ref().to_path_buf()
                 } else {
                     main_err!("input is a file, so output would have to be too, but is not");
                 }
             } else {
                 // let out_parent_abs = output_path.canonicalize()?;
-                let out_parent = output_path.parent();
+                let out_parent = output_path.as_ref().parent();
                 if let Some(out_parent) = out_parent {
                     if !out_parent.exists() {
                         main_err!("the output file's parent directory does not exist");
@@ -66,14 +69,14 @@ fn convert(
                 } else {
                     main_err!("failed to determine output file's parent directory");
                 }
-                output_path.to_path_buf()
+                output_path.as_ref().to_path_buf()
             }
         } else {
-            let input_ext = input_path.extension().and_then(OsStr::to_str);
+            let input_ext = input_path.as_ref().extension().and_then(OsStr::to_str);
             if let Some(input_ext) = input_ext {
                 let input_ext_lower = input_ext.to_lowercase();
                 if ["yml", "yaml"].contains(&input_ext_lower.as_str()) {
-                    let mut output_path = input_path.clone();
+                    let mut output_path = input_path.as_ref().to_path_buf();
                     output_path.set_extension("toml");
                     output_path
                 } else {
@@ -87,21 +90,21 @@ fn convert(
         let yaml_file = input_path;
         let toml_file = output_path;
         if toml_file.exists() && !overwrite {
-            log::info!("Skipping conversion of '{}' to '{}', because the target file already exists (see --{})", yaml_file.display(), toml_file.display(), cli::A_L_OVERWRITE);
+            log::info!("Skipping conversion of '{}' to '{}', because the target file already exists (see --{})", yaml_file.as_ref().display(), toml_file.display(), cli::A_L_OVERWRITE);
         } else {
-            conversion::v1_to_v2::convert_file(&yaml_file, &toml_file)?;
+            conversion::v1_to_v2::convert_file(yaml_file, &toml_file)?;
         }
         Ok(())
-    } else if input_path.is_dir() {
+    } else if input_path.as_ref().is_dir() {
         let output_path = match output_path {
-            Some(output_path) => {
-                if output_path.is_dir() {
-                    output_path
+            Some(output_path_bare) => {
+                if output_path_bare.as_ref().is_dir() {
+                    output_path_bare.as_ref().to_path_buf()
                 } else {
                     main_err!("input is a dir, so output would have to be too, but is not");
                 }
             }
-            None => &input_path,
+            None => input_path.as_ref().to_path_buf(),
         };
 
         let mut total_res = Ok(());
@@ -129,24 +132,27 @@ fn convert(
     }
 }
 
-fn validate(
-    input_path: &Path,
+fn validate<IP>(
+    input_path: IP,
     recursive: bool,
     okhv1: Option<bool>,
     cont: bool,
     quiet: bool,
-) -> Result<(), Box<dyn Error>> {
-    if input_path.is_file() {
+) -> Result<(), Box<dyn Error>>
+where
+    IP: AsRef<Path>,
+{
+    if input_path.as_ref().is_file() {
         let okhv1 = match okhv1 {
             Some(okhv1) => okhv1,
             None => {
                 if v1::Okh::ext_matcher()
-                    .is_match(input_path.extension().unwrap().to_str().unwrap())
+                    .is_match(input_path.as_ref().extension().unwrap().to_str().unwrap())
                 {
                     // TODO get rid of the unwraps
                     true
                 } else if v2::Okh::ext_matcher()
-                    .is_match(input_path.extension().unwrap().to_str().unwrap())
+                    .is_match(input_path.as_ref().extension().unwrap().to_str().unwrap())
                 {
                     // TODO get rid of the unwraps
                     false
@@ -161,7 +167,7 @@ fn validate(
             validation::okh_losh_toml(input_path)?;
         }
         Ok(())
-    } else if input_path.is_dir() {
+    } else if input_path.as_ref().is_dir() {
         let okhv1 = okhv1.unwrap_or_else(|| {
             panic!(
                 "Input dir specified, but missing an OKH version to scan for, see --{}",
@@ -180,7 +186,7 @@ fn validate(
         };
         let mut total_res = Ok(());
         for input_file in dir::iter_exts(dir::walker(input_path, recursive), ext_matcher) {
-            let res = validator(&input_file);
+            let res = validator(input_file.clone());
             if let Err(err) = res {
                 log::warn!("File: '{}'\n{}", input_file.display(), &err);
                 total_res = Err(err); // TODO FIXME We need a simple "Not all succeeded" indicator error here!
@@ -210,12 +216,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let arg_matcher = cli::arg_matcher();
     let sub_command_names: Vec<String> = arg_matcher
         .get_subcommands()
-        .map(App::get_name)
+        .map(Command::get_name)
         .map(ToOwned::to_owned)
         .collect();
     let args = &arg_matcher.get_matches();
-    let quiet = args.contains_id(A_L_QUIET);
-    let version = args.contains_id(A_L_VERSION);
+    let quiet = args.get_flag(cli::A_L_QUIET);
+    let version = args.get_flag(cli::A_L_VERSION);
     if version {
         if !quiet {
             print!("{} ", clap::crate_name!());
@@ -234,32 +240,25 @@ fn main() -> Result<(), Box<dyn Error>> {
     for sub_com_name in &sub_command_names {
         if let Some(sub_com) = args.subcommand_matches(sub_com_name) {
             if sub_com_name == cli::SC_N_CONVERT {
-                let input_path = sub_com
-                    .value_of(cli::A_P_INPUT)
-                    .map(Path::new)
-                    .map(Path::to_path_buf)
-                    .unwrap();
-                let output_path = sub_com.value_of(cli::A_P_OUTPUT).map(Path::new);
-                let recursive = sub_com.is_present(cli::A_L_RECURSIVE);
-                let cont = sub_com.is_present(cli::A_L_CONTINUE_ON_ERROR);
-                let overwrite = sub_com.is_present(cli::A_L_OVERWRITE);
+                let input_path = sub_com.get_one::<PathBuf>(cli::A_P_INPUT).unwrap();
+                let output_path = sub_com.get_one::<PathBuf>(cli::A_P_OUTPUT);
+                let recursive = sub_com.get_flag(cli::A_L_RECURSIVE);
+                let cont = sub_com.get_flag(cli::A_L_CONTINUE_ON_ERROR);
+                let overwrite = sub_com.get_flag(cli::A_L_OVERWRITE);
                 convert(input_path, output_path, recursive, cont, overwrite, quiet)?;
             } else if sub_com_name == cli::SC_N_VALIDATE {
-                let input_path = sub_com
-                    .value_of(cli::A_P_INPUT)
-                    .map(Path::new) /*.map(Path::to_path_buf)*/
-                    .unwrap();
-                let recursive = sub_com.is_present(cli::A_L_RECURSIVE);
+                let input_path = sub_com.get_one::<PathBuf>(cli::A_P_INPUT).unwrap();
+                let recursive = sub_com.get_flag(cli::A_L_RECURSIVE);
                 let okhv1 = sub_com
-                    .value_of(cli::A_L_OKH_VERSION)
+                    .get_one::<String>(cli::A_L_OKH_VERSION)
                     .map(|ver| ver == "v1");
-                let cont = sub_com.is_present(cli::A_L_CONTINUE_ON_ERROR);
+                let cont = sub_com.get_flag(cli::A_L_CONTINUE_ON_ERROR);
                 validate(input_path, recursive, okhv1, cont, quiet)?;
             } else if sub_com_name == cli::SC_N_GENERATE {
-                let overwrite = sub_com.is_present(cli::A_L_OVERWRITE);
+                let overwrite = sub_com.get_flag(cli::A_L_OVERWRITE);
                 generate(overwrite, quiet)?;
             } else {
-                main_err!(format!("Sub-command not implemented: '{}'", sub_com_name));
+                main_err!(format!("Sub-command not implemented: '{sub_com_name}'"));
             }
         }
     }

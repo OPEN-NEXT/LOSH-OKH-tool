@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Robin Vobruba <hoijui.quaero@gmail.com>
+# SPDX-FileCopyrightText: 2021-2022 Robin Vobruba <hoijui.quaero@gmail.com>
 #
 # SPDX-License-Identifier: Unlicense
 
@@ -14,7 +14,7 @@ v1_non_losh = [] # feature has no explicit dependencies
 
 [dependencies]
 chrono = "0.4"
-clap = { version = "3.0", features = ["cargo"] }
+clap = { version = "4.0", features = ["cargo"] }
 codify = { git = "https://github.com/hoijui/codify-rs.git" }
 const_format = "0.2"
 csv = "1.1"

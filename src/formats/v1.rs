@@ -333,7 +333,10 @@ impl Okh {
         Ok(parsed)
     }
 
-    pub fn from_yaml_file(yaml_file: &Path) -> Result<Okh, ParseError> {
+    pub fn from_yaml_file<IP>(yaml_file: IP) -> Result<Okh, ParseError>
+    where
+        IP: AsRef<Path>,
+    {
         log::debug!("Reading YAML file to string ...");
         let yaml_str = fs::read_to_string(yaml_file)?;
 
@@ -345,7 +348,10 @@ impl Okh {
         Ok(serde_yaml::to_string(self)?)
     }
 
-    pub fn to_yaml_file(&self, yaml_file: &Path) -> Result<(), SerError> {
+    pub fn to_yaml_file<OP>(&self, yaml_file: OP) -> Result<(), SerError>
+    where
+        OP: AsRef<Path>,
+    {
         let serialized = self.to_yaml()?;
         log::debug!("Writing v1 to YAML file ...");
         fs::write(yaml_file, serialized)?;

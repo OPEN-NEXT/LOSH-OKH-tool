@@ -112,7 +112,10 @@ pub fn with_schema(schema: &JSONSchema, content: &serde_json::Value) -> Result<(
     // Ok(())
 }
 
-pub fn okh_losh_toml(toml_path: &Path) -> Result<(), Error> {
+pub fn okh_losh_toml<IP>(toml_path: IP) -> Result<(), Error>
+where
+    IP: AsRef<Path>,
+{
     static RAW_SCHEMA: Lazy<serde_json::Value> = Lazy::new(|| {
         serde_json::from_str::<serde_json::Value>(SCHEMA_OKH_LOSH)
             .expect("The OKH-LOSH JSON schema contained within the binary is invalid JSON :/")
@@ -120,7 +123,7 @@ pub fn okh_losh_toml(toml_path: &Path) -> Result<(), Error> {
 
     log::debug!(
         "Validating an OKH LOSH file ('{}') ...",
-        toml_path.as_os_str().to_str().unwrap()
+        toml_path.as_ref().as_os_str().to_str().unwrap()
     );
     let toml_str = fs::read_to_string(toml_path)?;
     let instance = toml::from_str::<serde_json::Value>(&toml_str)?;
@@ -129,7 +132,10 @@ pub fn okh_losh_toml(toml_path: &Path) -> Result<(), Error> {
     with_schema(&validator, &instance)
 }
 
-pub fn okh_v1_yaml(yaml_path: &Path) -> Result<(), Error> {
+pub fn okh_v1_yaml<IP>(yaml_path: IP) -> Result<(), Error>
+where
+    IP: AsRef<Path>,
+{
     static RAW_SCHEMA: Lazy<serde_json::Value> = Lazy::new(|| {
         serde_json::from_str::<serde_json::Value>(SCHEMA_OKH_V1)
             .expect("The OKH-V1 JSON schema contained within the binary is invalid JSON :/")
@@ -137,7 +143,7 @@ pub fn okh_v1_yaml(yaml_path: &Path) -> Result<(), Error> {
 
     log::debug!(
         "Validating an OKH v1 file ('{}') ...",
-        yaml_path.as_os_str().to_str().unwrap()
+        yaml_path.as_ref().as_os_str().to_str().unwrap()
     );
     let yaml_str = fs::read_to_string(yaml_path)?;
     let instance = serde_yaml::from_str::<serde_json::Value>(&yaml_str)?;

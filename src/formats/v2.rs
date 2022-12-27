@@ -222,7 +222,10 @@ impl Okh {
         Ok(parsed)
     }
 
-    pub fn from_toml_file(toml_file: &Path) -> Result<Okh, ParseError> {
+    pub fn from_toml_file<OP>(toml_file: OP) -> Result<Okh, ParseError>
+    where
+        OP: AsRef<Path>,
+    {
         log::debug!("Reading TOML file to string ...");
         let toml_str = fs::read_to_string(toml_file)?;
 
@@ -234,7 +237,10 @@ impl Okh {
         Ok(toml::to_string(self)?)
     }
 
-    pub fn to_toml_file(&self, toml_file: &Path) -> Result<(), SerError> {
+    pub fn to_toml_file<OP>(&self, toml_file: OP) -> Result<(), SerError>
+    where
+        OP: AsRef<Path>,
+    {
         let serialized = self.to_toml()?;
         log::debug!("Writing to TOML file ...");
         fs::write(toml_file, serialized)?;
