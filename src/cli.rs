@@ -141,7 +141,7 @@ pub fn arg_matcher() -> App<'static> {
         .setting(AppSettings::SubcommandsNegateReqs)
         .setting(AppSettings::UseLongFormatForHelpSubcommand)
         .disable_version_flag(true)
-        .bin_name("okh-tool")
+        .bin_name(clap::crate_name!())
         .arg(arg_version())
         .arg(arg_quiet())
         .subcommand(subcom_convert())
