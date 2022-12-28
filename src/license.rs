@@ -32,8 +32,8 @@ impl fmt::Display for EvaluationError {
             // f.write_fmt(format_args!("    Failed '{}' at \"{}\"", req.req, self.expression[(req.span.start)..(req.span.end)]))?;
             let expr_part = &self.expression[(req.span.start as usize)..(req.span.end as usize)];
             f.write_fmt(format_args!(
-                "{{ '{}' - @({},{}) - \"{}\" }}, ",
-                req.req, req.span.start, req.span.end, expr_part
+                "{{ '{}' - @({},{}) - \"{expr_part}\" }}, ",
+                req.req, req.span.start, req.span.end
             ))?;
         }
         f.write_str("]")?;
