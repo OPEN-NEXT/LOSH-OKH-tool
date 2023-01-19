@@ -130,21 +130,27 @@ where
         };
 
         let mut total_res = Ok(());
+        let file_matcher = v1::Okh::file_matcher();
         for yaml_file in dir::iter_exts(dir::walker(&input_path, recursive), v1::Okh::ext_matcher())
         {
-            let mut toml_file = output_path.join(yaml_file.strip_prefix(&input_path)?);
-            toml_file.set_extension("toml");
-            fs::create_dir_all(toml_file.parent().unwrap())?;
-            if toml_file.exists() && !overwrite {
-                log::info!("Skipping conversion of '{}' to '{}', because the target file already exists (see --{})", yaml_file.display(), toml_file.display(), cli::A_L_OVERWRITE);
-                continue;
-            }
-            let res = conversion::v1_to_v2::convert_file(&yaml_file, &toml_file);
-            if let Err(err) = res {
-                log::warn!("File: '{}'\n{}", yaml_file.display(), &err);
-                total_res = Err(err); // TODO FIXME We need a simple "Not all succeeded" indicator error here!
-                if !cont {
-                    break;
+            if let Some(yaml_file_name) = yaml_file.file_name() {
+                if !file_matcher.is_match(&yaml_file_name.to_string_lossy()) {
+                    continue;
+                }
+                let mut toml_file = output_path.join(yaml_file.strip_prefix(&input_path)?);
+                toml_file.set_extension("toml");
+                fs::create_dir_all(toml_file.parent().unwrap())?;
+                if toml_file.exists() && !overwrite {
+                    log::info!("Skipping conversion of '{}' to '{}', because the target file already exists (see --{})", yaml_file.display(), toml_file.display(), cli::A_L_OVERWRITE);
+                    continue;
+                }
+                let res = conversion::v1_to_v2::convert_file(&yaml_file, &toml_file);
+                if let Err(err) = res {
+                    log::warn!("File: '{}'\n{}", yaml_file.display(), &err);
+                    total_res = Err(err); // TODO FIXME We need a simple "Not all succeeded" indicator error here!
+                    if !cont {
+                        break;
+                    }
                 }
             }
         }
@@ -201,6 +207,11 @@ where
         } else {
             v2::Okh::ext_matcher()
         };
+        let file_matcher = if okhv1 {
+            v1::Okh::file_matcher()
+        } else {
+            v2::Okh::file_matcher()
+        };
         let validator = if okhv1 {
             validation::okh_v1_yaml
         } else {
@@ -208,12 +219,17 @@ where
         };
         let mut total_res = Ok(());
         for input_file in dir::iter_exts(dir::walker(input_path, recursive), ext_matcher) {
-            let res = validator(input_file.clone());
-            if let Err(err) = res {
-                log::warn!("File: '{}'\n{}", input_file.display(), &err);
-                total_res = Err(err); // TODO FIXME We need a simple "Not all succeeded" indicator error here!
-                if !cont {
-                    break;
+            if let Some(input_file_name) = input_file.file_name() {
+                if !file_matcher.is_match(&input_file_name.to_string_lossy()) {
+                    continue;
+                }
+                let res = validator(input_file.clone());
+                if let Err(err) = res {
+                    log::warn!("File: '{}'\n{}", input_file.display(), &err);
+                    total_res = Err(err); // TODO FIXME We need a simple "Not all succeeded" indicator error here!
+                    if !cont {
+                        break;
+                    }
                 }
             }
         }

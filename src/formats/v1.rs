@@ -362,4 +362,8 @@ impl Okh {
     pub fn ext_matcher() -> &'static Regex {
         rgx!(r#"(^|\.)[yY][aA]?[mM][lL]$"#)
     }
+
+    pub fn file_matcher() -> &'static Regex {
+        rgx!(r#"okh\.[yY][aA]?[mM][lL]$"#)
+    }
 }
