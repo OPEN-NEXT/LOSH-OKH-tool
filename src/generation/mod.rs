@@ -85,10 +85,7 @@ pub fn run_projvar(proj_root: &Path) -> Res<projvar::environment::Environment> {
         hosting_type: projvar::tools::git_hosting_provs::HostingType::Unknown,
         only_required: true,
         key_prefix: None,
-        verbosity: (
-            projvar::settings::Verbosity::None,
-            projvar::settings::Verbosity::None,
-        ),
+        verbosity: projvar::settings::Verbosity::None,
     };
     log::trace!("Created Settings.");
     let mut environment = projvar::environment::Environment::new(settings);
