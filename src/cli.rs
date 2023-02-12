@@ -43,6 +43,7 @@ fn arg_input() -> Arg {
         .value_hint(ValueHint::AnyPath)
         .value_parser(value_parser!(PathBuf))
         .action(ArgAction::Set)
+        .required(true)
 }
 
 fn arg_output() -> Arg {
