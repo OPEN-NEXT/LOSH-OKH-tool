@@ -142,8 +142,8 @@ This project was funded by:
   from November 2021 (project start)
   until July 2022.
 
-  ![Logo of the European Union](
-      https://opennext.eu/wp-content/uploads/eulogo_da-1024x676.jpg)
+  ![Logo of the European Commission](
+      https://www.polemermediterranee.com/var/website/storage/images/media/images/european-commission-logo.png/422174-1-fre-FR/european-commission-logo.PNG_reference.png)
 
 * the European Regional Development Fund (ERDF)
   in the context of the [INTERFACER Project](https://www.interfacerproject.eu/),
