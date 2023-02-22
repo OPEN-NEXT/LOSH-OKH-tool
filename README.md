@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2021 Robin Vobruba <hoijui.quaero@gmail.com>
+SPDX-FileCopyrightText: 2021-2023 Robin Vobruba <hoijui.quaero@gmail.com>
 
 SPDX-License-Identifier: CC0-1.0
 -->
@@ -12,6 +12,7 @@ SPDX-License-Identifier: CC0-1.0
 [![REUSE status](
     https://api.reuse.software/badge/github.com/OPEN-NEXT/LOSH-OKH-tool)](
     https://api.reuse.software/info/github.com/OPEN-NEXT/LOSH-OKH-tool)
+
 [![In cooperation with FabCity Hamburg](
     https://custom-icon-badges.demolab.com/badge/-FCHH-dddddd.svg?logo=fc_logo)](
     https://fabcity.hamburg)
