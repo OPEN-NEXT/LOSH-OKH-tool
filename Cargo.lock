@@ -269,6 +269,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cli-utils"
+version = "0.5.0"
+source = "git+https://github.com/hoijui/cli-utils-rs.git#daaaaa32968c1f1060972f3afd02d948171828c7"
+dependencies = [
+ "git-version",
+ "once_cell",
+]
+
+[[package]]
 name = "codify"
 version = "0.1.0"
 source = "git+https://github.com/hoijui/codify-rs.git#0aabf56b8099feb7e3e7050a9435786507bb1032"
@@ -561,9 +570,9 @@ checksum = "22030e2c5a68ec659fde1e949a745124b48e6fa8b045b7ed5bd1fe4ccc5c4e5d"
 
 [[package]]
 name = "git-features"
-version = "0.25.1"
+version = "0.26.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f98e6ede7b790dfba16bf3c62861ae75c3719485d675b522cf7d7e748a4011c"
+checksum = "64be6a1e602760c2c83aac3d05553c90805748bba9cb0f0e944d66b0f85cea0d"
 dependencies = [
  "git-hash",
  "libc",
@@ -571,9 +580,9 @@ dependencies = [
 
 [[package]]
 name = "git-hash"
-version = "0.10.1"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1532d82bf830532f8d545c5b7b568e311e3593f16cf7ee9dd0ce03c74b12b99d"
+checksum = "2c4af641a41fdb4b1d5c2be9783cd8ffcd4e22a6ad41581c1f0dc3e882000585"
 dependencies = [
  "hex",
  "thiserror",
@@ -581,9 +590,9 @@ dependencies = [
 
 [[package]]
 name = "git-path"
-version = "0.7.0"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e40e68481a06da243d3f4dfd86a4be39c24eefb535017a862e845140dcdb878a"
+checksum = "43803d7636b05fa395e019c696f67cd39915029f6505a7e710bc372b21dc397c"
 dependencies = [
  "bstr 1.1.0",
  "thiserror",
@@ -591,9 +600,9 @@ dependencies = [
 
 [[package]]
 name = "git-url"
-version = "0.12.2"
+version = "0.13.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8651924c9692a778f09141ca44d1bf2dada229fe9b240f1ff1bdecd9621a1a93"
+checksum = "47d329ad9772efd73b54830c18c67e861b32a95f4ab5478e39803cbddfe5565f"
 dependencies = [
  "bstr 1.1.0",
  "git-features",
@@ -627,9 +636,9 @@ dependencies = [
 
 [[package]]
 name = "git2"
-version = "0.15.0"
+version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2994bee4a3a6a51eb90c218523be382fd7ea09b16380b9312e9dbe955ff7c7d1"
+checksum = "ccf7f68c2995f392c49fffb4f95ae2c873297830eb25c6bc4c114ce8f4562acc"
 dependencies = [
  "bitflags",
  "libc",
@@ -960,9 +969,9 @@ checksum = "8371e4e5341c3a96db127eb2465ac681ced4c433e01dd0e938adbef26ba93ba5"
 
 [[package]]
 name = "libgit2-sys"
-version = "0.14.0+1.5.0"
+version = "0.14.2+1.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47a00859c70c8a4f7218e6d1cc32875c4b55f6799445b842b0d8ed5e4c3d959b"
+checksum = "7f3d95f6b51075fe9810a7ae22c7095f12b98005ab364d8544797a825ce946a4"
 dependencies = [
  "cc",
  "libc",
@@ -2022,9 +2031,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.14.0"
+version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f7254b99e31cad77da24b08ebf628882739a608578bb1bcdfc1f9c21260d7c0"
+checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
 
 [[package]]
 name = "openssl"
@@ -2190,12 +2199,13 @@ dependencies = [
 
 [[package]]
 name = "projvar"
-version = "0.16.0"
-source = "git+https://github.com/hoijui/projvar.git#df21c4ac404d275854a9cff81c59eb1f5b6e5f67"
+version = "0.17.0"
+source = "git+https://github.com/hoijui/projvar.git#5f5074c35917f40189d599cc07c64e99dc69b915"
 dependencies = [
  "askalono",
  "chrono",
  "clap 4.0.26",
+ "cli-utils",
  "const_format",
  "enum-map",
  "git-url",
@@ -2315,10 +2325,11 @@ dependencies = [
 
 [[package]]
 name = "repvar"
-version = "0.9.0"
-source = "git+https://github.com/hoijui/repvar.git#0cec0d5767f310c848421c7349148104e2bcaa85"
+version = "0.11.0"
+source = "git+https://github.com/hoijui/repvar.git#4f482d1b1ebd36b4b84320a618c1225f72db228e"
 dependencies = [
  "clap 4.0.26",
+ "cli-utils",
  "const_format",
  "dotenv",
  "git-version",
@@ -2851,9 +2862,9 @@ checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
 
 [[package]]
 name = "typed-builder"
-version = "0.11.0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47a126a40dbff39e8320900cd61b8de053a2706e1f782cd27145792feb8fd41e"
+checksum = "64cba322cb9b7bc6ca048de49e83918223f35e7a86311267013afff257004870"
 dependencies = [
  "proc-macro2",
  "quote",
