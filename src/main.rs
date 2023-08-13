@@ -44,7 +44,7 @@ mod oxrl;
 mod validation;
 
 use std::{
-    env,
+    env::{self, current_dir},
     error::Error,
     ffi::OsStr,
     fs,
@@ -59,6 +59,26 @@ macro_rules! main_err {
     ($msg:expr) => {
         return Err(std::io::Error::new(std::io::ErrorKind::Other, $msg).into())
     };
+}
+
+/**
+ * Returns the path to the parent dir of the argument,
+ * if it has one.
+ * We use this rather complex way of doing it,
+ * because with a simple `file_path.parent()?.exists()`,
+ * we would get `false` in case of `"bla.txt"`,
+ * even if CWD is an existing directory.
+ */
+fn get_parent<P>(file_path: P) -> Option<PathBuf>
+where
+    P: AsRef<Path>,
+{
+    let file_path_val = file_path.as_ref();
+    let parent = file_path_val.parent()?;
+    if parent.components().next().is_none() {
+        return current_dir().ok();
+    }
+    Some(parent.to_owned())
 }
 
 fn convert<IP, OP>(
@@ -82,7 +102,7 @@ where
                     main_err!("input is a file, so output would have to be too, but is not");
                 }
             } else {
-                let out_parent = output_path_val.as_ref().parent();
+                let out_parent = get_parent(output_path_val.as_ref());
                 if let Some(out_parent_val) = out_parent {
                     if !out_parent_val.exists() {
                         main_err!(format!(
