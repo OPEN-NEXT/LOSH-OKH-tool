@@ -64,7 +64,7 @@ where
                     if let Some(part_utf8) = part.to_str() {
                         filters.iter().enumerate().for_each(|(i, flt)| {
                             if flt.is_match(part_utf8) {
-                                matching[i].push(path.to_path_buf());
+                                matching.get_mut(i).unwrap().push(path.to_path_buf());
                             }
                         });
                     }

@@ -25,8 +25,8 @@ use super::Error;
 // fn git_commit_date(date_format: &str) -> BoxResult<Option<String>> {
 fn git_commit_date() -> Result<Option<i64>, Error> {
     let repo = git2::Repository::open(".");
-    if let Ok(repo) = repo {
-        let head = repo.head()?;
+    if let Ok(repo_val) = repo {
+        let head = repo_val.head()?;
         let commit_time_git2 = head.peel_to_commit()?.time();
         // let commit_time_chrono = DateTime::<Utc>::from_utc(
         //     NaiveDateTime::from_timestamp(commit_time_git2.seconds(), 0),
@@ -44,7 +44,7 @@ fn shorten_to_repo_url(manifest_url: &Url) -> Option<Url> {
     let repo_path = RelativePathBuf::from(manifest_url.path());
     let mut repo_url = manifest_url.clone();
     repo_path.parent().map(|parent_path| {
-        repo_url.set_path(&parent_path.to_string());
+        repo_url.set_path(parent_path.as_ref());
         repo_url
     })
 }
@@ -115,7 +115,7 @@ fn function(v1: &v1::Okh) -> String {
     function
 }
 
-fn documentation_readiness_level(v1: &v1::Okh) -> Odrl {
+const fn documentation_readiness_level(v1: &v1::Okh) -> Odrl {
     if v1.made_independently {
         Odrl::Full
     } else {
@@ -159,15 +159,15 @@ fn licensor(v1: &v1::Okh) -> Result<String, Error> {
             }),
             (name, email) => {
                 let mut licensor_str = String::new();
-                if let Some(name) = name {
-                    licensor_str.push_str(name.trim());
+                if let Some(name_val) = name {
+                    licensor_str.push_str(name_val.trim());
                 }
-                if let Some(email) = email {
+                if let Some(email_val) = email {
                     if !licensor_str.is_empty() {
                         licensor_str.push(' ');
                     }
                     licensor_str.push('<');
-                    licensor_str.push_str(email.trim());
+                    licensor_str.push_str(email_val.trim());
                     licensor_str.push('>');
                 }
                 Ok(licensor_str)
@@ -218,14 +218,13 @@ fn sub_mosh(v1: &v1::Okh) -> Result<Vec<v2::SubMosh>, Error> {
         };
         let name = parent.title.clone().map(|s| s.trim().to_string());
         let main_url = v1.main_url().map(Url::to_string);
-        let manifest_file = parent.manifest.clone().and_then(|mf_url| match main_url {
-            None => None,
-            Some(main_url) => {
+        let manifest_file = parent.manifest.clone().and_then(|mf_url| {
+            main_url.and_then(|main_url_val| {
                 let mf_url_str = mf_url.to_string();
                 mf_url_str
-                    .strip_prefix(&main_url)
+                    .strip_prefix(&main_url_val)
                     .map(RelativePathBuf::from)
-            }
+            })
         });
         let image = vec![];
         let tsdc = None;

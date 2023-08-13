@@ -76,10 +76,10 @@ impl<'de> Deserialize<'de> for Locator {
             where
                 E: de::Error,
             {
-                Ok(match Url::parse(value) {
-                    Ok(url) => Locator::Url(url),
-                    Err(_) => Locator::Path(RelativePathBuf::from(value)),
-                })
+                Ok(Url::parse(value).map_or_else(
+                    |_| Locator::Path(RelativePathBuf::from(value)),
+                    Locator::Url,
+                ))
             }
         }
 
@@ -93,8 +93,8 @@ impl Serialize for Locator {
         S: Serializer,
     {
         let value = match self {
-            Locator::Url(url) => url.as_str(),
-            Locator::Path(relative_path) => relative_path.as_str(),
+            Self::Url(url) => url.as_str(),
+            Self::Path(relative_path) => relative_path.as_str(),
         };
         serializer.serialize_str(value)
     }

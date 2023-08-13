@@ -74,29 +74,31 @@ where
     OP: AsRef<Path>,
 {
     if input_path.as_ref().is_file() {
-        let output_path = if let Some(output_path) = output_path {
-            if output_path.as_ref().exists() {
-                if output_path.as_ref().is_file() {
-                    output_path.as_ref().to_path_buf()
+        let output_path_val = if let Some(output_path_val) = output_path {
+            if output_path_val.as_ref().exists() {
+                if output_path_val.as_ref().is_file() {
+                    output_path_val.as_ref().to_path_buf()
                 } else {
                     main_err!("input is a file, so output would have to be too, but is not");
                 }
             } else {
-                // let out_parent_abs = output_path.canonicalize()?;
-                let out_parent = output_path.as_ref().parent();
-                if let Some(out_parent) = out_parent {
-                    if !out_parent.exists() {
-                        main_err!("the output file's parent directory does not exist");
+                let out_parent = output_path_val.as_ref().parent();
+                if let Some(out_parent_val) = out_parent {
+                    if !out_parent_val.exists() {
+                        main_err!(format!(
+                            "the output file's parent directory '{}' does not exist",
+                            out_parent_val.display()
+                        ));
                     }
                 } else {
                     main_err!("failed to determine output file's parent directory");
                 }
-                output_path.as_ref().to_path_buf()
+                output_path_val.as_ref().to_path_buf()
             }
         } else {
             let input_ext = input_path.as_ref().extension().and_then(OsStr::to_str);
-            if let Some(input_ext) = input_ext {
-                let input_ext_lower = input_ext.to_lowercase();
+            if let Some(input_ext_val) = input_ext {
+                let input_ext_lower = input_ext_val.to_lowercase();
                 if ["yml", "yaml"].contains(&input_ext_lower.as_str()) {
                     let mut output_path = input_path.as_ref().to_path_buf();
                     output_path.set_extension("toml");
@@ -110,7 +112,7 @@ where
         };
 
         let yaml_file = input_path;
-        let toml_file = output_path;
+        let toml_file = output_path_val;
         if toml_file.exists() && !overwrite {
             log::info!("Skipping conversion of '{}' to '{}', because the target file already exists (see --{})", yaml_file.as_ref().display(), toml_file.display(), cli::A_L_OVERWRITE);
         } else {
@@ -118,7 +120,7 @@ where
         }
         Ok(())
     } else if input_path.as_ref().is_dir() {
-        let output_path = match output_path {
+        let output_path_val = match output_path {
             Some(output_path_bare) => {
                 if output_path_bare.as_ref().is_dir() {
                     output_path_bare.as_ref().to_path_buf()
@@ -137,7 +139,7 @@ where
                 if !file_matcher.is_match(&yaml_file_name.to_string_lossy()) {
                     continue;
                 }
-                let mut toml_file = output_path.join(yaml_file.strip_prefix(&input_path)?);
+                let mut toml_file = output_path_val.join(yaml_file.strip_prefix(&input_path)?);
                 toml_file.set_extension("toml");
                 fs::create_dir_all(toml_file.parent().unwrap())?;
                 if toml_file.exists() && !overwrite {
@@ -171,8 +173,8 @@ where
     IP: AsRef<Path>,
 {
     if input_path.as_ref().is_file() {
-        let okhv1 = match okhv1 {
-            Some(okhv1) => okhv1,
+        let okhv1_val = match okhv1 {
+            Some(okhv1_val) => okhv1_val,
             None => {
                 if v1::Okh::ext_matcher()
                     .is_match(input_path.as_ref().extension().unwrap().to_str().unwrap())
@@ -189,30 +191,30 @@ where
                 }
             }
         };
-        if okhv1 {
+        if okhv1_val {
             validation::okh_v1_yaml(input_path)?;
         } else {
             validation::okh_losh_toml(input_path)?;
         }
         Ok(())
     } else if input_path.as_ref().is_dir() {
-        let okhv1 = okhv1.unwrap_or_else(|| {
+        let okhv1_val = okhv1.unwrap_or_else(|| {
             panic!(
                 "Input dir specified, but missing an OKH version to scan for, see --{}",
                 cli::A_L_OKH_VERSION
             )
         });
-        let ext_matcher = if okhv1 {
+        let ext_matcher = if okhv1_val {
             v1::Okh::ext_matcher()
         } else {
             v2::Okh::ext_matcher()
         };
-        let file_matcher = if okhv1 {
+        let file_matcher = if okhv1_val {
             v1::Okh::file_matcher()
         } else {
             v2::Okh::file_matcher()
         };
-        let validator = if okhv1 {
+        let validator = if okhv1_val {
             validation::okh_v1_yaml
         } else {
             validation::okh_losh_toml

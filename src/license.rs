@@ -30,7 +30,10 @@ impl fmt::Display for EvaluationError {
         ))?;
         for req in &self.failed {
             // f.write_fmt(format_args!("    Failed '{}' at \"{}\"", req.req, self.expression[(req.span.start)..(req.span.end)]))?;
-            let expr_part = &self.expression[(req.span.start as usize)..(req.span.end as usize)];
+            let expr_part = &self
+                .expression
+                .get((req.span.start as usize)..(req.span.end as usize))
+                .unwrap();
             f.write_fmt(format_args!(
                 "{{ '{}' - @({},{}) - \"{expr_part}\" }}, ",
                 req.req, req.span.start, req.span.end

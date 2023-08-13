@@ -104,9 +104,9 @@ pub fn run_projvar(proj_root: &Path) -> Res<projvar::environment::Environment> {
 
 pub fn find_root_files(proj_root: &Path) -> (ORelPath, ORelPath, ORelPath) {
     let root_file_filters = &[
-        rgx!(r#"README.*(\.(md|markdown))?"#),
+        rgx!(r"README.*(\.(md|markdown))?"),
         rgx!(r#"[Bb](ill)?[-_]?[Oo](f)?[-_]?[Mm](aterials)?"#),
-        rgx!(r#"CONTRIBUTI(NG|ON)?(\.(md|markdown))?"#),
+        rgx!(r"CONTRIBUTI(NG|ON)?(\.(md|markdown))?"),
     ];
     let found_files = dir::scan(proj_root, false, root_file_filters, Path::file_name);
     let single_found_files = found_files.iter().map(|fnds| {
@@ -129,12 +129,12 @@ pub fn find_rec_files(proj_root: &Path) -> Vec<Vec<RelativePathBuf>> {
         &Regex::new(file_types::RS_PCB).unwrap(),
     ]; // TODO Write the second filter and use it
     let found_rec_files = dir::scan(proj_root, true, file_ext_filters, Path::extension);
-    let found_rec_files = found_rec_files.iter().map(|fnds| {
+    let found_rec_files_map = found_rec_files.iter().map(|fnds| {
         let mut sorted = fnds.clone();
         sorted.sort_by_key(|pth| pth.as_os_str().len());
         sorted
     });
-    let rec_files_groups: Result<_, _> = found_rec_files
+    let rec_files_groups: Result<_, _> = found_rec_files_map
         .into_iter()
         .map(|rec_files_group| {
             rec_files_group
@@ -173,7 +173,7 @@ fn find_parts(
     let okh_toml_name_os = OsStr::new(okh_toml_name);
     let cwd = RelativePathBuf::new();
     // let some_okh_toml_name = Some(okh_toml_name);
-    for toml_path in &rec_files_groups[1] {
+    for toml_path in rec_files_groups.get(1).unwrap() {
         // let toml_path = Path::new(toml_file);
         // Its an OKH TOML and not the root one.
         if toml_path
@@ -182,18 +182,21 @@ fn find_parts(
             .is_some()
         {
             let sub_part_dir = toml_path.parent();
-            if let Some(sub_part_dir) = sub_part_dir {
-                if sub_part_dir != cwd {
-                    println!("XXX part_dir: {sub_part_dir}");
+            if let Some(sub_part_dir_val) = sub_part_dir {
+                if sub_part_dir_val != cwd {
+                    println!("XXX part_dir: {sub_part_dir_val}");
                     sub_part_dirs
-                        .entry(sub_part_dir.to_relative_path_buf())
+                        .entry(sub_part_dir_val.to_relative_path_buf())
                         .or_insert_with(HashSet::new)
                         .insert(okh_toml_name_rel_path.clone());
                 }
             }
         }
     }
-    for design_files_group in [&rec_files_groups[2], &rec_files_groups[3]] {
+    for design_files_group in [
+        rec_files_groups.get(2).unwrap(),
+        rec_files_groups.get(3).unwrap(),
+    ] {
         for design_path in design_files_group {
             // let design_path = Path::new(design_file);
             // println!("XXX ext: {}", file_type.extension);
@@ -288,7 +291,7 @@ fn generate_data(module_dir: &Path, environment: &Environment, overwrite: bool) 
     let (readme, bom, contribution_guide) = find_root_files(module_dir); // TODO Use git list if git repo, otherwise filesystem list - does projvar already have this, or only osh-tool (Nim :/) ?
 
     let rec_files_groups = find_rec_files(module_dir); // TODO Use git list if git repo, otherwise filesystem list - does projvar already have this, or only osh-tool (Nim :/) ?
-    let image = &rec_files_groups[0];
+    let image = rec_files_groups.get(0).unwrap();
 
     let part = find_parts(&rec_files_groups, module_dir, environment, overwrite)?;
 
@@ -345,34 +348,34 @@ pub fn okh_losh_toml_part(
         );
         Some(run_projvar(repo_root)?)
     };
-    let environment =
+    let environment_val =
         environment.map_or_else(|| owned_env.as_ref().unwrap(), |environment| environment);
     let module_dir = sub_part.to_path(repo_root);
     // println!("XXX ran projvar in '{}' - '{}'.", repo_root.display(), sub_part);
 
-    let okh_losh = generate_data(&module_dir, environment, overwrite)?;
+    let okh_losh = generate_data(&module_dir, environment_val, overwrite)?;
 
     let manifest_file = module_dir.join(v2::MANIFEST_FILE_NAME);
     if !manifest_file.exists() || overwrite {
         log::debug!("Writing to TOML file ...");
 
         // construct the REUSE/SPDX license header
-        let git_user_name = String::from_utf8(
+        let git_user_name_dirty = String::from_utf8(
             Command::new("git")
                 .arg("config")
                 .arg("user.name")
                 .output()?
                 .stdout,
         )?;
-        let git_user_name = git_user_name.trim_end();
-        let git_user_email = String::from_utf8(
+        let git_user_name = git_user_name_dirty.trim_end();
+        let git_user_email_dirty = String::from_utf8(
             Command::new("git")
                 .arg("config")
                 .arg("user.email")
                 .output()?
                 .stdout,
         )?;
-        let git_user_email = git_user_email.trim_end();
+        let git_user_email = git_user_email_dirty.trim_end();
         let now: DateTime<Utc> = Utc::now();
         let header = format!(
             "# SPDX-FileCopyrightText: {} {} <{}>

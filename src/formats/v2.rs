@@ -215,14 +215,14 @@ pub struct Okh {
 }
 
 impl Okh {
-    pub fn from_toml(toml_str: &str) -> Result<Okh, ParseError> {
+    pub fn from_toml(toml_str: &str) -> Result<Self, ParseError> {
         log::debug!("Parsing TOML to v2 ...");
-        let parsed = toml::from_str::<Okh>(toml_str)?;
+        let parsed = toml::from_str::<Self>(toml_str)?;
         // TODO Add extra sanity checks here, if required
         Ok(parsed)
     }
 
-    pub fn from_toml_file<OP>(toml_file: OP) -> Result<Okh, ParseError>
+    pub fn from_toml_file<OP>(toml_file: OP) -> Result<Self, ParseError>
     where
         OP: AsRef<Path>,
     {
@@ -248,10 +248,10 @@ impl Okh {
     }
 
     pub fn ext_matcher() -> &'static Regex {
-        rgx!(r#"(^|\.)[tT][oO][mM][lL]$"#)
+        rgx!(r"(^|\.)[tT][oO][mM][lL]$")
     }
 
     pub fn file_matcher() -> &'static Regex {
-        rgx!(r#"okh\.[tT][oO][mM][lL]$"#)
+        rgx!(r"okh\.[tT][oO][mM][lL]$")
     }
 }

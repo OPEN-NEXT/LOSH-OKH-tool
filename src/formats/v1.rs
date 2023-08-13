@@ -334,7 +334,7 @@ impl Okh {
         Ok(parsed)
     }
 
-    pub fn from_yaml_file<IP>(yaml_file: IP) -> Result<Okh, ParseError>
+    pub fn from_yaml_file<IP>(yaml_file: IP) -> Result<Self, ParseError>
     where
         IP: AsRef<Path>,
     {
@@ -360,10 +360,10 @@ impl Okh {
     }
 
     pub fn ext_matcher() -> &'static Regex {
-        rgx!(r#"(^|\.)[yY][aA]?[mM][lL]$"#)
+        rgx!(r"(^|\.)[yY][aA]?[mM][lL]$")
     }
 
     pub fn file_matcher() -> &'static Regex {
-        rgx!(r#"okh\.[yY][aA]?[mM][lL]$"#)
+        rgx!(r"okh\.[yY][aA]?[mM][lL]$")
     }
 }
