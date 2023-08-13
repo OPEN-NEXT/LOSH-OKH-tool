@@ -80,21 +80,24 @@ macro_rules! impl_oxrl {
     Deserialize,
 )]
 pub enum Otrl {
-    /// product specifications/requirements
+    /// Product idea; needs are identified and initial specifications are defined.
     #[serde(rename = "OTRL-1")]
     Ideation = 1,
-    /// proof of concept
+    /// Mature product concept has been formulated
     #[serde(rename = "OTRL-2")]
     Conception = 2,
-    /// early prototype
+    /// Product model is developed
     #[serde(rename = "OTRL-3")]
-    TechnicalDesign = 3,
-    /// minimum viable product
+    Development = 3,
+    /// Full functional prototype is built and tested
     #[serde(rename = "OTRL-4")]
-    ProductDesign = 4,
-    /// CE certification
+    PrototypingAndTesting = 4,
+    /// Fairly reliable processes identified and characterised
     #[serde(rename = "OTRL-5")]
-    SafeProduct = 5,
+    ManufacturingDevelopment = 5,
+    /// Certificate marking conformity assessment or comparable
+    #[serde(rename = "OTRL-6")]
+    ProductQualification = 6,
 }
 
 impl_oxrl!(Otrl, "OTRL", R_OTRL_PREFIX);
@@ -113,21 +116,21 @@ impl_oxrl!(Otrl, "OTRL", R_OTRL_PREFIX);
     Deserialize,
 )]
 pub enum Odrl {
-    /// making information available as free/open source material
+    /// Published information under free open source licence
     #[serde(rename = "ODRL-1")]
     Started = 1,
-    /// enabling usability of the documentation by the provision of essential files and information
+    /// Provision of documentation files and in editable formats enabling collaboration development
     #[serde(rename = "ODRL-2")]
     Minimal = 2,
-    /// full exploitability of the documentation
+    /// Complete documentation as per DIN SPEC 3105-1
     #[serde(rename = "ODRL-3")]
     Full = 3,
-    /// attested compliance with DIN SPEC 3105-1
+    /// Public evidence of documentation maturity
     #[serde(rename = "ODRL-3*")]
     Audited = 4,
-    /// enabling decentralised commercial distribution
+    /// Full documentation for product qualification
     #[serde(rename = "ODRL-4")]
-    AuditedPlusCeDocs = 5,
+    QualificationReady = 5,
 }
 
 impl_oxrl!(Odrl, "ODRL", R_ODRL_PREFIX);
