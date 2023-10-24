@@ -6,9 +6,9 @@ SPDX-License-Identifier: CC0-1.0
 
 # LOSH OKH tool
 
-[![GitHub license](
+[![License](
     https://img.shields.io/github/license/OPEN-NEXT/LOSH-OKH-tool.svg?style=flat)](
-    ./LICENSE)
+    LICENSE)
 [![REUSE status](
     https://api.reuse.software/badge/github.com/OPEN-NEXT/LOSH-OKH-tool)](
     https://api.reuse.software/info/github.com/OPEN-NEXT/LOSH-OKH-tool)
