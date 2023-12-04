@@ -9,13 +9,13 @@ use serde::Deserialize;
 
 #[derive(Debug, Copy, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum Open {
+pub enum Openness {
     Open,
     Proprietary,
     Unknown,
 }
 
-impl From<Option<bool>> for Open {
+impl From<Option<bool>> for Openness {
     fn from(val: Option<bool>) -> Self {
         match val {
             Some(true) => Self::Open,
@@ -25,7 +25,7 @@ impl From<Option<bool>> for Open {
     }
 }
 
-impl TryFrom<&str> for Open {
+impl TryFrom<&str> for Openness {
     type Error = String;
 
     fn try_from(val: &str) -> Result<Self, Self::Error> {
@@ -40,7 +40,7 @@ impl TryFrom<&str> for Open {
 
 #[derive(Debug, Copy, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum Text {
+pub enum Format {
     Text,
     Binary,
     Both,
@@ -58,7 +58,7 @@ pub enum Text {
 //     }
 // }
 
-impl TryFrom<&str> for Text {
+impl TryFrom<&str> for Format {
     type Error = String;
 
     fn try_from(val: &str) -> Result<Self, Self::Error> {
@@ -104,7 +104,7 @@ impl TryFrom<&str> for Source {
 #[derive(Debug, Deserialize)]
 pub struct FileFormat<S> {
     pub extension: S,
-    pub open: Open,
-    pub text: Text,
+    pub open: Openness,
+    pub text: Format,
     pub source: Source,
 }

@@ -47,8 +47,8 @@ fn transcribe_file_ext(dest_file: &mut File, category: &str) -> Result<(), Box<d
     for format in &formats {
         writeln!(dest_file, "    FileFormat {{")?;
         writeln!(dest_file, "        extension: \"{}\",", format.extension)?;
-        writeln!(dest_file, "        open: Open::{:?},", format.open)?;
-        writeln!(dest_file, "        text: Text::{:?},", format.text)?;
+        writeln!(dest_file, "        open: Openness::{:?},", format.open)?;
+        writeln!(dest_file, "        text: Format::{:?},", format.text)?;
         writeln!(dest_file, "        source: Source::{:?},", format.source)?;
         writeln!(dest_file, "    }},")?;
     }
@@ -82,7 +82,7 @@ fn transcribe_file_exts() -> Result<(), Box<dyn Error>> {
 
     writeln!(
         dest_file,
-        "use crate::file_types_format::{{FileFormat, Open, Text, Source}};"
+        "use crate::file_types_format::{{FileFormat, Openness, Format, Source}};"
     )?;
 
     for category in categories {
