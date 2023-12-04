@@ -27,4 +27,4 @@ mod validation;
 
 use git_version::git_version;
 
-pub const VERSION: &str = git_version!();
+pub const VERSION: &str = git_version!(cargo_prefix = "", fallback = "unknown");
