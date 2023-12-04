@@ -1,14 +1,14 @@
 <!--
-SPDX-FileCopyrightText: 2021-2023 Robin Vobruba <hoijui.quaero@gmail.com>
+SPDX-FileCopyrightText: 2021 - 2023 Robin Vobruba <hoijui.quaero@gmail.com>
 
 SPDX-License-Identifier: CC0-1.0
 -->
 
 # LOSH OKH tool
 
-[![License](
-    https://img.shields.io/github/license/OPEN-NEXT/LOSH-OKH-tool.svg?style=flat)](
-    LICENSE)
+[![License: AGPL-3.0-or-later](
+    https://img.shields.io/badge/License-AGPL%203.0+-blue.svg)](
+    LICENSE.txt)
 [![REUSE status](
     https://api.reuse.software/badge/github.com/OPEN-NEXT/LOSH-OKH-tool)](
     https://api.reuse.software/info/github.com/OPEN-NEXT/LOSH-OKH-tool)
