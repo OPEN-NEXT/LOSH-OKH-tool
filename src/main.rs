@@ -53,6 +53,7 @@ where
     Some(parent.to_owned())
 }
 
+#[allow(clippy::fn_params_excessive_bools)]
 fn convert<IP, OP>(
     input_path: IP,
     output_path: Option<OP>,
