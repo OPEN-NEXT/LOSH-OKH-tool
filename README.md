@@ -12,6 +12,21 @@ SPDX-License-Identifier: CC0-1.0
 [![REUSE status](
     https://api.reuse.software/badge/github.com/OPEN-NEXT/LOSH-OKH-tool)](
     https://api.reuse.software/info/github.com/OPEN-NEXT/LOSH-OKH-tool)
+[![Repo](
+    https://img.shields.io/badge/Repo-GitHub-555555&logo=github.svg)](
+    https://github.com/OPEN-NEXT/LOSH-OKH-tool)
+[![Package Releases](
+    https://img.shields.io/crates/v/okh_tool.svg)](
+    https://crates.io/crates/okh_tool)
+[![Documentation Releases](
+    https://docs.rs/okh_tool/badge.svg)](
+    https://docs.rs/okh_tool)
+[![Dependency Status](
+    https://deps.rs/repo/github/OPEN-NEXT/LOSH-OKH-tool/status.svg)](
+    https://deps.rs/repo/github/OPEN-NEXT/LOSH-OKH-tool)
+[![Build Status](
+    https://github.com/OPEN-NEXT/LOSH-OKH-tool/workflows/build/badge.svg)](
+    https://github.com/OPEN-NEXT/LOSH-OKH-tool/actions)
 
 [![In cooperation with FabCity Hamburg](
     https://raw.githubusercontent.com/osegermany/tiny-files/master/res/media/img/badge-fchh.svg)](
