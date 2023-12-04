@@ -166,7 +166,8 @@ pub struct Okh {
 
     #[serde(default = "default_okh_manifest_version")]
     // #[serde(skip_serializing_if = "Option::is_none")]
-    pub okh_manifest_version: Option<DSString>,
+    #[serde(rename = "okh-manifest-version")]
+    pub manifest_version: Option<DSString>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]

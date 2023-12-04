@@ -105,14 +105,14 @@ pub fn run_projvar(proj_root: &Path) -> Res<projvar::environment::Environment> {
 pub fn find_root_files(proj_root: &Path) -> (ORelPath, ORelPath, ORelPath) {
     let root_file_filters = &[
         rgx!(r"README.*(\.(md|markdown))?"),
-        rgx!(r#"[Bb](ill)?[-_]?[Oo](f)?[-_]?[Mm](aterials)?"#),
+        rgx!(r"[Bb](ill)?[-_]?[Oo](f)?[-_]?[Mm](aterials)?"),
         rgx!(r"CONTRIBUTI(NG|ON)?(\.(md|markdown))?"),
     ];
     let found_files = dir::scan(proj_root, false, root_file_filters, Path::file_name);
     let single_found_files = found_files.iter().map(|fnds| {
         let mut sorted = fnds.clone();
         sorted.sort_by_key(|pth| pth.as_os_str().len());
-        sorted.get(0).map(|p| p.display().to_string())
+        sorted.first().map(|p| p.display().to_string())
     });
     let mut rel_paths = single_found_files
         .map(Option::unwrap)
@@ -123,8 +123,8 @@ pub fn find_root_files(proj_root: &Path) -> (ORelPath, ORelPath, ORelPath) {
 
 pub fn find_rec_files(proj_root: &Path) -> Vec<Vec<RelativePathBuf>> {
     let file_ext_filters = &[
-        rgx!(r#"^(png|jpg|jpeg|gif|svg)$"#),
-        rgx!(r#"^toml$"#),
+        rgx!(r"^(png|jpg|jpeg|gif|svg)$"),
+        rgx!(r"^toml$"),
         &Regex::new(file_types::RS_CAD).unwrap(),
         &Regex::new(file_types::RS_PCB).unwrap(),
     ]; // TODO Write the second filter and use it
@@ -187,7 +187,7 @@ fn find_parts(
                     println!("XXX part_dir: {sub_part_dir_val}");
                     sub_part_dirs
                         .entry(sub_part_dir_val.to_relative_path_buf())
-                        .or_insert_with(HashSet::new)
+                        .or_default()
                         .insert(okh_toml_name_rel_path.clone());
                 }
             }
@@ -203,7 +203,7 @@ fn find_parts(
             if let Some(sub_part_dir) = design_path.parent() {
                 sub_part_dirs
                     .entry(sub_part_dir.to_relative_path_buf())
-                    .or_insert_with(HashSet::new)
+                    .or_default()
                     // .insert(design_path.file_name().unwrap());
                     .insert(RelativePathBuf::from_path(PathBuf::from(
                         design_path.file_name().unwrap(),
@@ -291,7 +291,7 @@ fn generate_data(module_dir: &Path, environment: &Environment, overwrite: bool) 
     let (readme, bom, contribution_guide) = find_root_files(module_dir); // TODO Use git list if git repo, otherwise filesystem list - does projvar already have this, or only osh-tool (Nim :/) ?
 
     let rec_files_groups = find_rec_files(module_dir); // TODO Use git list if git repo, otherwise filesystem list - does projvar already have this, or only osh-tool (Nim :/) ?
-    let image = rec_files_groups.get(0).unwrap();
+    let image = rec_files_groups.first().unwrap();
 
     let part = find_parts(&rec_files_groups, module_dir, environment, overwrite)?;
 

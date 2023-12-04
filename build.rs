@@ -78,7 +78,7 @@ fn transcribe_file_exts() -> Result<(), Box<dyn Error>> {
     let dest_path = Path::new(&out_dir).join("file_types.rs");
     let categories = vec!["cad", "pcb"];
 
-    let mut dest_file = File::create(&dest_path)?;
+    let mut dest_file = File::create(dest_path)?;
 
     writeln!(
         dest_file,
