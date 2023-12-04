@@ -20,9 +20,13 @@ SPDX-License-Identifier: CC0-1.0
     https://raw.githubusercontent.com/osegermany/tiny-files/master/res/media/img/badge-oseg.svg)](
     https://opensourceecology.de)
 
+## Definitions
+
 * LOSH: _A **L**ibrary of **O**pen **S**ource **H**ardware -
   technical documentation in an open graph database._
 * OKH: _**O**pen **K**now-**H**ow - A standard for OSH project meta-data._
+
+## Intro
 
 This repo contains two pieces of software:
 
