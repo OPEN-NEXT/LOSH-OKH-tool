@@ -166,7 +166,7 @@ fn find_parts(
     let mut sub_part_dirs: HashMap<RelativePathBuf, HashSet<RelativePathBuf>> = HashMap::new();
 
     // for file_type in file_types::CAD {
-    //     println!("XXX ext: {}", file_type.extension);
+    //     log::trace!("XXX ext: {}", file_type.extension);
     // }
     let okh_toml_name = "okh.toml";
     let okh_toml_name_rel_path = RelativePathBuf::from("okh.toml");
@@ -184,7 +184,7 @@ fn find_parts(
             let sub_part_dir = toml_path.parent();
             if let Some(sub_part_dir_val) = sub_part_dir {
                 if sub_part_dir_val != cwd {
-                    println!("XXX part_dir: {sub_part_dir_val}");
+                    log::trace!("XXX part_dir: {sub_part_dir_val}");
                     sub_part_dirs
                         .entry(sub_part_dir_val.to_relative_path_buf())
                         .or_default()
@@ -199,7 +199,7 @@ fn find_parts(
     ] {
         for design_path in design_files_group {
             // let design_path = Path::new(design_file);
-            // println!("XXX ext: {}", file_type.extension);
+            // log::trace!("XXX ext: {}", file_type.extension);
             if let Some(sub_part_dir) = design_path.parent() {
                 sub_part_dirs
                     .entry(sub_part_dir.to_relative_path_buf())
@@ -226,7 +226,7 @@ fn find_parts(
             }
         }
         let name = sub_part_dir.file_name().map(str::to_owned);
-        // println!("XXX ext: {}", file_type.extension);
+        // log::trace!("XXX ext: {}", file_type.extension);
         // part.push(SubMosh {
         //     name,
         //     manifest_file: Some(manifest_file),
@@ -266,10 +266,10 @@ fn generate_data(module_dir: &Path, environment: &Environment, overwrite: bool) 
     }
 
     let now: DateTime<Utc> = Utc::now();
-    // println!("UTC now is: {}", now);
-    // println!("UTC now in RFC 2822 is: {}", now.to_rfc2822());
-    // println!("UTC now in RFC 3339 is: {}", now.to_rfc3339());
-    // println!(
+    // log::debug!("UTC now is: {}", now);
+    // log::debug!("UTC now in RFC 2822 is: {}", now.to_rfc2822());
+    // log::debug!("UTC now in RFC 3339 is: {}", now.to_rfc3339());
+    // log::debug!(
     //     "UTC now in a custom format is: {}",
     //     now.format("%a %b %e %T %Y")
     // );
@@ -284,7 +284,7 @@ fn generate_data(module_dir: &Path, environment: &Environment, overwrite: bool) 
         .inner();
     // let repo = repo.inner();
     let first_commit = first_commit(repo)?;
-    // println!("first commit msg: {}", first_commit.message().unwrap());
+    // log::info!("first commit msg: {}", first_commit.message().unwrap());
     let git_author = first_commit.author().to_string();
     let licensor = git_author;
 
@@ -341,7 +341,7 @@ pub fn okh_losh_toml_part(
     let owned_env = if environment.is_some() {
         None
     } else {
-        println!(
+        log::trace!(
             "XXX running projvar in '{}' - '{}' ...",
             repo_root.display(),
             sub_part
@@ -351,7 +351,7 @@ pub fn okh_losh_toml_part(
     let environment_val =
         environment.map_or_else(|| owned_env.as_ref().unwrap(), |environment| environment);
     let module_dir = sub_part.to_path(repo_root);
-    // println!("XXX ran projvar in '{}' - '{}'.", repo_root.display(), sub_part);
+    // log::info!("XXX ran projvar in '{}' - '{}'.", repo_root.display(), sub_part);
 
     let okh_losh = generate_data(&module_dir, environment_val, overwrite)?;
 

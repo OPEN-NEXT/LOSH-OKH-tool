@@ -103,8 +103,8 @@ pub fn with_schema(schema: &JSONSchema, content: &serde_json::Value) -> Result<(
     // let result = schema.validate(content);
     // if let Err(errors) = result {
     //     for error in errors {
-    //         println!("Validation error: {}", error);
-    //         println!("Instance path: {}", error.instance_path);
+    //         log::error!("Validation error: {}", error);
+    //         log::error!("Instance path: {}", error.instance_path);
     //     }
     // }
 
