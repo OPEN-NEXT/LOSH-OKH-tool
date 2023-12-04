@@ -35,6 +35,14 @@ SPDX-License-Identifier: CC0-1.0
     https://raw.githubusercontent.com/osegermany/tiny-files/master/res/media/img/badge-oseg.svg)](
     https://opensourceecology.de)
 
+A CLI tool to deal with OKH data files.
+Its main functionalities are:
+
+- validation of, and
+- conversion between
+
+different formats of OKH
+
 ## Definitions
 
 * LOSH: _A **L**ibrary of **O**pen **S**ource **H**ardware -
