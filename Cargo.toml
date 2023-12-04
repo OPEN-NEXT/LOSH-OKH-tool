@@ -13,7 +13,6 @@ keywords = ["cli", "utility", "conversion", "okh"]
 categories = ["command-line-utilities", "text-processing"]
 readme = "README.md"
 edition = "2021"
-publish = false
 
 [features]
 # Activate this to enable all OKH v1 properties,
