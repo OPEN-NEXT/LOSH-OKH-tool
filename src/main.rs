@@ -293,6 +293,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .map(|ver| ver == "v1");
                 let cont = sub_com.get_flag(cli::A_L_CONTINUE_ON_ERROR);
                 validate(input_path, recursive, okhv1, cont, quiet)?;
+                log::info!("Valid!");
             } else if sub_com_name == cli::SC_N_GENERATE {
                 let overwrite = sub_com.get_flag(cli::A_L_OVERWRITE);
                 generate(overwrite, quiet)?;
