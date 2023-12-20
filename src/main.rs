@@ -193,7 +193,7 @@ where
     } else if input_path.as_ref().is_dir() {
         let okhv1_val = okhv1.unwrap_or_else(|| {
             panic!(
-                "Input dir specified, but missing an OKH version to scan for, see --{}",
+                "Input dir specified, but missing an OKH version to scan for, use --{} <OKH-VERSION>",
                 cli::A_L_OKH_VERSION
             )
         });
