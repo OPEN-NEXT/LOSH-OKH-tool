@@ -212,16 +212,16 @@ where
         } else {
             validation::okh_losh_toml
         };
-        let mut total_res = Ok(());
+        let mut total_res = Err(validation::Error::NoManifestsFound);
         for input_file in dir::iter_exts(dir::walker(input_path, recursive), ext_matcher) {
             if let Some(input_file_name) = input_file.file_name() {
                 if !file_matcher.is_match(&input_file_name.to_string_lossy()) {
                     continue;
                 }
-                let res = validator(input_file.clone());
-                if let Err(err) = res {
+                total_res = validator(input_file.clone());
+                if let Err(err) = &total_res {
                     log::warn!("File: '{}'\n{}", input_file.display(), &err);
-                    total_res = Err(err); // TODO FIXME We need a simple "Not all succeeded" indicator error here!
+                    // TODO FIXME We need a simple "Not all succeeded" indicator error here!
                     if !cont {
                         break;
                     }

@@ -20,6 +20,9 @@ const SCHEMA_OKH_V1: &str = include_str!(concat!(
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("Failed to find any manifests.")]
+    NoManifestsFound,
+
     #[error("Failed to read or write, probably from/to the file-system.")]
     Io(#[from] std::io::Error),
 
