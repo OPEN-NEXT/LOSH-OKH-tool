@@ -26,7 +26,7 @@ edition = "2021"
 v1_non_losh = [] # feature has no explicit dependencies
 
 [lints.rust]
-rust_2021_compatibility = "warn"
+rust_2021_compatibility = { level = "warn", priority = -1 }
 dead_code = "allow"
 
 [lints.clippy]
@@ -63,7 +63,7 @@ codify = { version = "0.6", package = "codify_hoijui" }
 const_format = "0.2"
 git-version = "0.3"
 git2 = { version = "0.18", default-features = false } # "default-features = false" is required for MUSL compatibility, to get rid of OpenSSL
-jsonschema = "0.17"
+jsonschema = "0.18"
 lingua = "1.6"
 log = "0.4"
 num-derive = "0.4"
@@ -73,15 +73,15 @@ openssl-sys = { version = "0.9", features = [ "vendored" ] } # better MUSL compa
 projvar = "0.19"
 regex = "1.10"
 relative-path = { version = "1.9", features = ["serde"] }
-reqwest = { version = "0.11", features = ["blocking"] }
+reqwest = { version = "0.12", features = ["blocking"] }
 semver = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.9"
 simplelog = "0.12"
 spdx = "0.10"
-strum = "0.25"
-strum_macros = "0.25"
+strum = "0.26"
+strum_macros = "0.26"
 thiserror = "1.0"
 toml = "0.8"
 url = { version = "2.5", features = ["serde"] }
