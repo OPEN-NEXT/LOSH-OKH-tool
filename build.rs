@@ -7,27 +7,27 @@ use std::{
     error::Error,
     fs::{self, File},
     io::Write,
-    path::Path,
+    path::{Path, PathBuf},
     process,
 };
 
 #[path = "src/file_types_format.rs"]
 mod file_types_format;
 
-// use codify::Codify;
 use file_types_format::FileFormat;
 
 const OSH_FILE_TYPES_ROOT: &str = "resources/osh-file-types";
 
 fn transcribe_file_ext(dest_file: &mut File, category: &str) -> Result<(), Box<dyn Error>> {
-    let in_file = format!("{OSH_FILE_TYPES_ROOT}/file_extension_formats-{category}.csv");
-    let in_file = fs::canonicalize(Path::new(&in_file))?;
+    let in_file = fs::canonicalize(PathBuf::from(format!(
+        "{OSH_FILE_TYPES_ROOT}/file_extension_formats-{category}.csv"
+    )))?;
     println!("cargo:rerun-if-changed={}", in_file.display());
     let mut rdr = csv::Reader::from_path(in_file)?;
 
     let mut formats = vec![];
-    for record in rdr.records() {
-        let record = record?;
+    for record_res in rdr.records() {
+        let record = record_res?;
         // NOTE We need to provide a type hint for automatic deserialization.
         let format: FileFormat<String> = FileFormat {
             extension: record[0].into(),

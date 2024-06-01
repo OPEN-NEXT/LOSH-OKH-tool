@@ -126,8 +126,7 @@ const fn documentation_readiness_level(v1: &v1::Okh) -> Odrl {
 fn is_prototype(development_stage: &Option<String>) -> bool {
     development_stage
         .as_ref()
-        .map(|ds| ds.to_lowercase() == "prototype")
-        .unwrap_or_default()
+        .is_some_and(|ds| ds.to_lowercase() == "prototype")
 }
 
 fn technology_readiness_level(v1: &v1::Okh) -> Otrl {
