@@ -91,7 +91,12 @@ cargo build --release
 
 This will produce the stand-alone binary tool in `target/release/okh-tool`.
 
-To run it, you have these options for conversion:
+To run it, you can either use the binary you just built,
+or run it directly from the sources with:
+
+```bash
+cargo run --
+```
 
 ```bash
 $ okh-tool conv --help
