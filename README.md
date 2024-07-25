@@ -81,7 +81,7 @@ The `fetch-n-conv-v1` script will:
 
 ## Usage
 
-### Conversion and Validation
+### Building and Running
 
 The `okh-tool` is written in rust, and can be compiled like this:
 
@@ -97,6 +97,10 @@ or run it directly from the sources with:
 ```bash
 cargo run --
 ```
+
+#### Conversion
+
+You have these options for conversion:
 
 ```bash
 $ okh-tool conv --help
@@ -123,7 +127,9 @@ OPTIONS:
     -V, --version      Print version information
 ```
 
-and these for validation:
+#### Validation
+
+You have these options for validation:
 
 ```bash
 $ okh-tool val --help
@@ -150,7 +156,7 @@ OPTIONS:
     -V, --version                      Print version information
 ```
 
-### Fetching and converting OKH v1
+#### Fetching and converting all OKH v1 data
 
 Once you have the above described `okh-tool` ready
 (it is required by this script),
