@@ -57,11 +57,13 @@ This repo contains two pieces of software:
 * `fetch-n-conv-v1`
 
 and it uses the [OKH JSON-Schemas repo](
-https://github.com/OpenKnowHow/okh-search/blob/master/projects_okhs.csv)
+https://github.com/OPEN-NEXT/LOSH-OKH-JSON-Schemas)
 as submodule.
 
-* [okh-losh.schema.json](src/okh-losh.schema.json)
-* [okh-v1.schema.json](src/okh-v1.schema.json)
+* [okh-losh.schema.json](
+  https://github.com/OPEN-NEXT/LOSH-OKH-JSON-Schemas/blob/master/okh-losh.schema.json)
+* [okh-v1.schema.json](
+  https://github.com/OPEN-NEXT/LOSH-OKH-JSON-Schemas/blob/master/okh-v1.schema.json)
 
 The `okh-tool` can:
 
@@ -170,7 +172,7 @@ This project was funded by:
   until July 2022.
 
   ![Logo of the European Commission](
-      https://www.polemermediterranee.com/var/website/storage/images/media/images/european-commission-logo.png/422174-1-fre-FR/european-commission-logo.PNG_reference.png)
+      https://commission.europa.eu/sites/default/files/styles/oe_theme_medium_no_crop/public/2016-09/ec-logo-st-rvb-web_en.jpg)
 
 * the European Regional Development Fund (ERDF)
   in the context of the [INTERFACER Project](https://www.interfacerproject.eu/),
