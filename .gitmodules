@@ -2,9 +2,6 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-[submodule "scripts"]
-	path = scripts
-	url = https://github.com/hoijui/rust-project-scripts.git
 [submodule "resources/okh-json-schemas"]
 	path = resources/okh-json-schemas
 	url = https://github.com/OPEN-NEXT/LOSH-OKH-JSON-Schemas.git
@@ -14,3 +11,6 @@
 [submodule "resources/osh-dir-std"]
 	path = resources/osh-dir-std
 	url = https://github.com/hoijui/osh-dir-std.git
+[submodule "run/rp"]
+	path = run/rp
+	url = https://github.com/hoijui/rust-project-scripts.git
