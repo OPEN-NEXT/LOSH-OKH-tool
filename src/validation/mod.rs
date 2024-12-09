@@ -11,12 +11,12 @@ use std::{fmt, fs, path::Path};
 
 const SCHEMA_OKH_LOSH: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/resources/okh-json-schemas/okh-losh.schema.json"
-)); // TODO de-duplicate; is also under $HOME/Projects/OSEG/repos/
+    "/resources/okh/src/schema/okh.schema.json"
+));
 const SCHEMA_OKH_V1: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/resources/okh-json-schemas/okh-v1.schema.json"
-)); // TODO de-duplicate; is also under $HOME/Projects/OSEG/repos/
+    "/resources/okh/src/schema/okh-v1.schema.json"
+));
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
