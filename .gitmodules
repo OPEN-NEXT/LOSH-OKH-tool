@@ -11,6 +11,3 @@
 [submodule "resources/osh-dir-std"]
 	path = resources/osh-dir-std
 	url = https://github.com/hoijui/osh-dir-std.git
-[submodule "run/rp"]
-	path = run/rp
-	url = https://github.com/hoijui/rust-project-scripts.git
