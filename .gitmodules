@@ -11,3 +11,6 @@
 [submodule "resources/osh-dir-std"]
 	path = resources/osh-dir-std
 	url = https://github.com/hoijui/osh-dir-std.git
+[submodule "resources/okh"]
+	path = resources/okh
+	url = https://github.com/iop-alliance/OpenKnowHow.git
