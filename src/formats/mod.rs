@@ -65,7 +65,7 @@ impl<'de> Deserialize<'de> for Locator {
     {
         struct LocatorVisitor;
 
-        impl<'de> Visitor<'de> for LocatorVisitor {
+        impl Visitor<'_> for LocatorVisitor {
             type Value = Locator;
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
