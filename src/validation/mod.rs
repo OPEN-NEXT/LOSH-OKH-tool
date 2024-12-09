@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 // use jsonschema::{Draft, JSONSchema};
-use jsonschema::JSONSchema;
+use jsonschema::{Draft, Validator};
 // use serde_json::json;
 use once_cell::sync::Lazy;
 
@@ -54,9 +54,9 @@ pub struct JsonSchemaValidationError {
     /// Type of validation error.
     pub kind: jsonschema::error::ValidationErrorKind,
     /// Path to the value that failed validation.
-    pub instance_path: jsonschema::paths::JSONPointer,
+    pub instance_path: jsonschema::paths::Location,
     /// Path to the JSON Schema keyword that failed validation.
-    pub schema_path: jsonschema::paths::JSONPointer,
+    pub schema_path: jsonschema::paths::Location,
 }
 
 impl<'a> From<jsonschema::ValidationError<'a>> for JsonSchemaValidationError {
@@ -98,10 +98,10 @@ impl<'a> From<jsonschema::ErrorIterator<'a>> for JsonSchemaValidationErrorCollec
 
 /// Use this if you evaluate multiple contents (usually files)
 /// with the same schema.
-pub fn with_schema(schema: &JSONSchema, content: &serde_json::Value) -> Result<(), Error> {
+pub fn with_schema(schema: &Validator, content: &serde_json::Value) -> Result<(), Error> {
     schema
         .validate(content)
-        .map_err(JsonSchemaValidationErrorCollection::from)
+        .map_err(JsonSchemaValidationError::from)
         .map_err(std::convert::Into::into)
     // let result = schema.validate(content);
     // if let Err(errors) = result {
@@ -131,7 +131,10 @@ where
     let toml_str = fs::read_to_string(toml_path)?;
     let instance = toml::from_str::<serde_json::Value>(&toml_str)?;
 
-    let validator = JSONSchema::compile(&RAW_SCHEMA).map_err(JsonSchemaValidationError::from)?;
+    let validator = jsonschema::options()
+        .with_draft(Draft::Draft7)
+        .build(&RAW_SCHEMA)
+        .map_err(JsonSchemaValidationError::from)?;
     with_schema(&validator, &instance)
 }
 
@@ -151,7 +154,10 @@ where
     let yaml_str = fs::read_to_string(yaml_path)?;
     let instance = serde_yaml::from_str::<serde_json::Value>(&yaml_str)?;
 
-    let validator = JSONSchema::compile(&RAW_SCHEMA).map_err(JsonSchemaValidationError::from)?;
+    let validator = jsonschema::options()
+        .with_draft(Draft::Draft7)
+        .build(&RAW_SCHEMA)
+        .map_err(JsonSchemaValidationError::from)?;
     with_schema(&validator, &instance)
 }
 
