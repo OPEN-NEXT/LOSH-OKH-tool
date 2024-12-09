@@ -178,7 +178,7 @@ where
 /*     // TODO get rid of this, but use its parts elsewhere */
 /*     log::info!("Running sample validations ..."); */
 /*     // let schema = serde_json::from_str::<serde_json::Value>(SCHEMA_OKH_LOSH)?; */
-/*     // let schema_boxed: &'static serde_json::Value = Box::leak(Box::new(schema)); // TODO Cool Box::leack hack here! not yet understood.. but kind of important to keep! */
+/*     // let schema_boxed: &'static serde_json::Value = Box::leak(Box::new(schema)); // TODO Cool Box::leak hack here! not yet understood.. but kind of important to keep! */
 
 /*     okh_v1_yaml(&PathBuf::from_str("/home/hoijui/Projects/OSEG/repos/LOSH-okh-v1-to-v2/target/okh_v1/www_appropedia_org____okh_php_title_3D_printed_acorn_sheller.yml").unwrap())?; // TODO HACK Absolute path! */
 /*     okh_losh_toml( */

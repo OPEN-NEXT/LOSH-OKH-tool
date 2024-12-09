@@ -110,7 +110,7 @@ fn arg_continue_on_error() -> Arg {
 
 fn arg_overwrite() -> Arg {
     Arg::new(A_L_OVERWRITE)
-        .help("If the outout file alreayd exists, overwrite it, instead of skipping the conversion")
+        .help("If the output file already exists, overwrite it, instead of skipping the conversion")
         .short(A_S_OVERWRITE)
         .long(A_L_OVERWRITE)
         .action(ArgAction::SetTrue)
