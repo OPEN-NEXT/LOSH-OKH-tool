@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2021-2024 Robin Vobruba <hoijui.quaero@gmail.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+# See the output of "$0 -h" for details.
+
+# Exit immediately on each error and unset variable;
+# see: https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+#set -Eeu
+
+script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+# script_dir="$(dirname "$script_path")"
+script_name="$(basename "$script_path")"
+
+APP_NAME="OKH v1 YAML Cleaner"
+verbose=false
+in_place=false
+overwrite=false
+
+function print_help() {
+
+	echo "$APP_NAME - Does a basic cleansing of an OKH v1 YAML file,"
+	echo "avoiding common pitfalls like not removing/commenting lines from the template."
+	echo
+	echo "Usage:"
+	echo "  $script_name [OPTION...] <IN_FILE_PATH> [OUT_FILE_PATH]"
+	echo "Options:"
+	echo "  -h, --help"
+	echo "    Print this usage help and exit"
+	echo "  -i, --in-place"
+	echo "    Overwrites the input file"
+	echo "  -o, --overwrite"
+	echo "    Overwrites the output file"
+	echo "  -v, --verbose"
+	echo "    Writes some log output to stderr"
+	echo "Examples:"
+	echo "  $script_name --help"
+	echo "  $script_name okh-proj-x-dirty.yml okh-proj-x-clean.yml"
+	echo "  $script_name --overwrite okh-proj-x-dirty.yml okh-proj-x-clean.yml"
+	echo "  $script_name --in-place okh-proj-x.yml"
+}
+
+# read command-line args
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+	arg="$1"
+	shift # $2 -> $1, $3 -> $2, ...
+
+	case "$arg" in
+		-h|--help)
+			print_help
+			exit 0
+			;;
+		-i|--in-place)
+			in_place=true
+			;;
+		-o|--overwrite)
+			overwrite=true
+			;;
+		-v|--verbose)
+			verbose=true
+			;;
+		*) # non-/unknown option
+			POSITIONAL+=("$arg") # save it in an array for later
+			;;
+	esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+input_file="$1"
+if $in_place
+then
+	output_file="$input_file.$RANDOM.tmp"
+else
+	output_file="$2"
+	if ! $overwrite
+	then
+		if [ -e "$output_file" ]
+		then
+			>&2 echo "ERROR: Output file already exists, and -o,--overwrite was not given."
+			exit 1
+		fi
+	fi
+fi
+
+mkdir -p "$(dirname "$output_file")"
+
+# yaml_file="${input_file/#*\/}"
+# if [[ "$yaml_file" =~ .*BadenLab____Hyperspectral-scanner.* ]] \
+# 	|| [[ "$yaml_file" =~ .*_php_title_Composite_Materials_Resin_Mixing.*.yml ]] \
+# 	|| [[ "$yaml_file" =~ .*____jbon____Ball-Machine____master____okh-ballSortingMachine.yml ]] \
+# 	|| [[ "$yaml_file" =~ .*title_Hexayurt____Book.yml ]] \
+# 	|| [[ "$yaml_file" =~ .*title_Photovoltaic___solar_heating_system_on_Golf_Course_Rd__Bayside.yml ]]
+# then
+# 	echo "Skipped cleaning of '$yaml_file'."
+# 	exit 0
+# fi
+
+if $verbose
+then
+	>&2 echo "INFO Cleaning '$input_file' ..."
+fi
+
+# HACKY fixes, this scripts main business!
+sed \
+	-e 's|FALSE|false|g' \
+	-e 's|TRUE|true|g' \
+	-e 's|^licensor: Field Ready|licensor:\n  name: Field Ready|g' \
+	-e 's|^development-stage: \[value\]||' \
+	-e 's|flase|false|g' \
+	-e 's|^%Open know-how manifest 0.1$||g' \
+	-e 's|^---$||g' \
+	-e 's|: @Du33Jerry|: "@Du33Jerry"|g' \
+	-e 's|name: $|name: ANONYMOUS|g' \
+	-e 's| bchow(at)seas(dot)upenn(dot)edu| bchow@seas.upenn.edu|g' \
+	-e 's| j\.bonvoisin\[at\]bath\.ac\.uk| j.bonvoisin@bath.ac.uk|g' \
+	-e 's|https://www.appropedia.org/Guava_Auto_CD4/CD4%_System|https://www.appropedia.org/Guava_Auto_CD4/CD4%25_System|g' \
+	-e 's|\\\uFFFD||g' \
+	-e 's|^<|#<|g' \
+	-e 's|^ in <b|# in <b|g' \
+	-e 's|^title: \+\([^>|]\)|title: >-\n  \1|g' \
+	-e 's|^description: \+\([^>|]\)|description: >-\n  \1|g' \
+	-e 's|^\([a-zA-Z0-9_-]\+\): \+\([>|]\)[^-]|\1: \2-|g' \
+	-e 's|: [.][/]|: |' \
+	-e 's|\s*# required .*$||' \
+	-e 's|: CC |: CC-|' \
+	-e 's|: CERN OHL v1.2|: CERN-OHL-1.2|' \
+	-e 's|: CERN$|: CERN-OHL-1.1|' \
+	"$input_file" \
+	> "$output_file"
+
+if ! grep -q "^version: " < "$output_file"
+then
+	{
+		echo
+		echo "version: UNVERSIONED"
+		echo
+	} >> "$output_file"
+fi
+
+if ! grep -q "^licensor:" < "$output_file"
+then
+	{
+		echo
+		echo "licensor:"
+		echo "  name: ANONYMOUS"
+		echo
+	} >> "$output_file"
+fi
+
+if $in_place
+then
+	mv "$output_file" "$input_file"
+fi
+
+if $verbose
+then
+	>&2 echo "INFO Cleaning '$input_file' - done: '$output_file'"
+fi

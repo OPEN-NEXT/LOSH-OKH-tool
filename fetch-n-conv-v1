@@ -235,53 +235,7 @@ then
 			continue
 		fi
 
-		echo
-		echo "Cleaning '$yaml_file' ..."
-		# HACKY fixes
-		sed \
-			-e 's|FALSE|false|g' \
-			-e 's|TRUE|true|g' \
-			-e 's|^licensor: Field Ready|licensor:\n  name: Field Ready|g' \
-			-e 's|^development-stage: \[value\]||' \
-			-e 's|flase|false|g' \
-			-e 's|^%Open know-how manifest 0.1$||g' \
-			-e 's|^---$||g' \
-			-e 's|: @Du33Jerry|: "@Du33Jerry"|g' \
-			-e 's|name: $|name: ANONYMOUS|g' \
-			-e 's| bchow(at)seas(dot)upenn(dot)edu| bchow@seas.upenn.edu|g' \
-			-e 's| j\.bonvoisin\[at\]bath\.ac\.uk| j.bonvoisin@bath.ac.uk|g' \
-			-e 's|https://www.appropedia.org/Guava_Auto_CD4/CD4%_System|https://www.appropedia.org/Guava_Auto_CD4/CD4%25_System|g' \
-			-e 's|\\\uFFFD||g' \
-			-e 's|^<|#<|g' \
-			-e 's|^ in <b|# in <b|g' \
-			-e 's|^title: \+\([^>|]\)|title: >-\n  \1|g' \
-			-e 's|^description: \+\([^>|]\)|description: >-\n  \1|g' \
-			-e 's|^\([a-zA-Z0-9_-]\+\): \+\([>|]\)[^-]|\1: \2-|g' \
-			-e 's|: [.][/]|: |' \
-			-e 's|\s*# required .*$||' \
-			-e 's|: CC |: CC-|' \
-			-e 's|: CERN OHL v1.2|: CERN-OHL-1.2|' \
-			-e 's|: CERN$|: CERN-OHL-1.1|' \
-			"$yaml_orig_path" \
-			> "$yaml_clean_path"
-		if ! grep -q "^version: " < "$yaml_clean_path"
-		then
-			{
-				echo
-				echo "version: UNVERSIONED"
-				echo
-			} >> "$yaml_clean_path"
-		fi
-		if ! grep -q "^licensor:" < "$yaml_clean_path"
-		then
-			{
-				echo
-				echo "licensor:"
-				echo "  name: ANONYMOUS"
-				echo
-			} >> "$yaml_clean_path"
-		fi
-		echo "Done cleaning '$yaml_file'."
+		"$script_dir/run/sanitize-v1-yaml" --verbose --overwrite "$yaml_orig_path" "$yaml_clean_path"
 	done
 fi
 
