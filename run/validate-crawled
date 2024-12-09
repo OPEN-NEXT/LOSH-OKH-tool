@@ -10,18 +10,20 @@
 set -Eeuo pipefail
 #set -Eeu
 
-script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
-#source "$script_dir/_shared_git"
+script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+script_dir="$(dirname "$script_path")"
+script_name="$(basename "$script_path")"
 
 # initial default values
 APP_NAME="OKH LOSH-v1 Crawled Data Validator"
 # https://github.com/OpenKnowHow/okh-search/blob/master/projects_okhs.csv
 CRAWLED_DATA_CLONE_URL="https://gitlab.opensourceecology.de/verein/projekte/losh-rdf.git"
-build_dir="target"
+proj_root_dir="$script_dir/.."
+build_dir="$proj_root_dir/target"
 local_repo_dir="$build_dir/losh-crawled"
 local_repo_val_rep_dir="$build_dir/losh-crawled-validation-report"
 OKH_TOOL="${OKH_TOOL:-$(which okh-tool || true)}"
-okh_tool="${OKH_TOOL:-$(find "$script_dir/target/release" -maxdepth 1 -type f -name okh-tool || true)}"
+okh_tool="${OKH_TOOL:-$(find "$build_dir/release" -maxdepth 1 -type f -name okh-tool || true)}"
 fetch_data=false
 convert=true
 clean=false
@@ -29,7 +31,6 @@ validate=true
 
 function print_help() {
 
-	script_name="$(basename "$0")"
 	echo "$APP_NAME - Locally clones the YAML and RDF/Turtle data"
 	echo "crawled within the context of LOSH, cleans and validates it."
 	echo
@@ -110,7 +111,7 @@ then
 	echo "################################################################################"
 	echo "Converting OKH-LOSH-v1-krawler YAML to OKH-LOSH-v1 (official specsification conformant) TOML files ..."
 	echo "(This is mostly just a format conversion, with some additional filtering and adhering to the spec)"
-	"$script_dir/filter-yaml" "target/losh-crawled/RDF/"
+	"$script_dir/filter-yaml" "$build_dir/losh-crawled/RDF/"
 fi
 
 if $clean

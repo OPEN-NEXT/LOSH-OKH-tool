@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SPDX-FileCopyrightText: 2021-2022 Robin Vobruba <hoijui.quaero@gmail.com>
+# SPDX-FileCopyrightText: 2021-2024 Robin Vobruba <hoijui.quaero@gmail.com>
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -10,20 +10,22 @@
 set -Eeuo pipefail
 #set -Eeu
 
-script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
-#source "$script_dir/_shared_git"
+script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+script_dir="$(dirname "$script_path")"
+script_name="$(basename "$script_path")"
 
 # initial default values
 APP_NAME="OKH version 1 YAMLs Fetcher"
 # https://github.com/OpenKnowHow/okh-search/blob/master/projects_okhs.csv
 MAIN_CSV_URL="https://raw.githubusercontent.com/OpenKnowHow/okh-search/master/projects_okhs.csv"
 APPROPEDIA_CSV_URL="https://open-next.github.io/LOSH-Appropedia-Scraper/appro_yaml_urls.csv"
-build_dir="target"
+proj_root_dir="$script_dir/.."
+build_dir="$proj_root_dir/target"
 yamls_orig_dir="$build_dir/okh_v1/orig"
 yamls_clean_dir="$build_dir/okh_v1/clean"
 tomls_dir="$build_dir/okh_v2"
 OKH_TOOL="${OKH_TOOL:-$(which okh-tool || true)}"
-okh_tool="${OKH_TOOL:-$(find "$script_dir/target/release" -maxdepth 1 -type f -name okh-tool || true)}"
+okh_tool="${OKH_TOOL:-$(find "$build_dir/release" -maxdepth 1 -type f -name okh-tool || true)}"
 krawl="${KRAWL:-}"
 if [ -z "$krawl" ]
 then
@@ -235,7 +237,7 @@ then
 			continue
 		fi
 
-		"$script_dir/run/sanitize-v1-yaml" --verbose --overwrite "$yaml_orig_path" "$yaml_clean_path"
+		"$script_dir/sanitize-v1-yaml" --verbose --overwrite "$yaml_orig_path" "$yaml_clean_path"
 	done
 fi
 
