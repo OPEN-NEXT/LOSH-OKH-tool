@@ -106,6 +106,7 @@ fi
 
 # HACKY fixes, this scripts main business!
 sed \
+	-e 's|^\s\+-\s\+null\s*$||g' \
 	-e 's|FALSE|false|g' \
 	-e 's|TRUE|true|g' \
 	-e 's|^licensor: Field Ready|licensor:\n  name: Field Ready|g' \
