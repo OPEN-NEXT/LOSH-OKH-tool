@@ -43,11 +43,8 @@ pub enum Error {
     ValidationFailure(#[from] JsonSchemaValidationErrorCollection),
 }
 
-// pub type ErrorIterator = Box<dyn Iterator<Item = JsonSchemaValidationError> + Sync + Send + std::fmt::Debug>;
-
 #[derive(thiserror::Error, Debug)]
 #[error("Error:\n\tKind:    {kind:?}\n\tWhere:   {instance_path}\n\tContent: {instance}\n")]
-// #[error("Failed to validate ]")]
 pub struct JsonSchemaValidationError {
     /// Value of the property that failed validation.
     pub instance: serde_json::Value,
@@ -81,7 +78,6 @@ impl fmt::Display for JsonSchemaValidationErrorCollection {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("\n# Validation error(s):\n")?;
         for failure in &self.failed_reqs {
-            // f.write_fmt(format_args!("Validation error: {}\nInstance path: {}", failure, failure.instance_path))?;
             f.write_fmt(format_args!("{failure}"))?;
         }
         Ok(())
