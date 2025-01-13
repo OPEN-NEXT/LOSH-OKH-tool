@@ -122,7 +122,6 @@ fn subcom_validate() -> Command {
     .arg(arg_input().index(1))
     .arg(arg_okhv())
     .arg(arg_recursive())
-    .arg(arg_continue_on_error())
 }
 
 fn subcom_generate() -> Command {

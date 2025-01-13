@@ -159,7 +159,6 @@ fn validate<IP>(
     input_path: IP,
     recursive: bool,
     okhv1: Option<bool>,
-    cont: bool,
     quiet: bool,
 ) -> Result<(), Box<dyn Error>>
 where
@@ -212,21 +211,30 @@ where
         } else {
             validation::okh_losh_toml
         };
-        let mut total_res = Err(validation::Error::NoManifestsFound);
+        let mut total_res: Result<(), validation::ErrorCollection> = Err(
+            (input_path.as_ref().to_path_buf(), validation::Error::NoManifestsFound).into());
+        let mut errors = Vec::new();
+        let mut manifests_processed = 0;
         for input_file in dir::iter_exts(dir::walker(input_path, recursive), ext_matcher) {
             if let Some(input_file_name) = input_file.file_name() {
                 if !file_matcher.is_match(&input_file_name.to_string_lossy()) {
                     continue;
                 }
-                total_res = validator(input_file.clone());
-                if let Err(err) = &total_res {
-                    log::warn!("File: '{}'\n{}", input_file.display(), &err);
-                    // TODO FIXME We need a simple "Not all succeeded" indicator error here!
-                    if !cont {
-                        break;
-                    }
+                let single_res = validator(input_file.clone());
+                if let Err(err) = single_res {
+                    errors.push((input_file, err));
                 }
+                manifests_processed += 1;
             }
+        }
+        if !errors.is_empty() {
+            if errors.len() == 1 {
+                total_res = Err(errors.into_iter().next().unwrap().into());
+            } else {
+                total_res = Err(validation::ErrorCollection{errors}.into());
+            }
+        } else if manifests_processed > 0 {
+            total_res = Ok(());
         }
         Ok(total_res?)
     } else {
@@ -291,8 +299,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let okhv1 = sub_com
                     .get_one::<String>(cli::A_L_OKH_VERSION)
                     .map(|ver| ver == "v1");
-                let cont = sub_com.get_flag(cli::A_L_CONTINUE_ON_ERROR);
-                validate(input_path, recursive, okhv1, cont, quiet)?;
+                validate(input_path, recursive, okhv1, quiet)?;
                 log::info!("Valid!");
             } else if sub_com_name == cli::SC_N_GENERATE {
                 let overwrite = sub_com.get_flag(cli::A_L_OVERWRITE);

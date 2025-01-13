@@ -7,7 +7,7 @@ use jsonschema::{Draft, Validator};
 // use serde_json::json;
 use once_cell::sync::Lazy;
 
-use std::{fmt, fs, path::Path};
+use std::{fmt, fs, path::{Path, PathBuf}};
 
 const SCHEMA_OKH_LOSH: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
@@ -41,6 +41,31 @@ pub enum Error {
     // #[error(transparent)]
     #[error("Failed to validate:\n{0:#}")]
     ValidationFailure(#[from] JsonSchemaValidationErrorCollection),
+}
+
+#[derive(thiserror::Error, Debug)]
+pub struct ErrorCollection {
+    /// Failed requirements.
+    pub errors: Vec<(PathBuf, Error)>,
+}
+
+impl fmt::Display for ErrorCollection {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("\n# Validation error(s):\n")?;
+        for (file, err) in &self.errors {
+            // f.write_fmt(format_args!("Validation error: {}\nInstance path: {}", failure, failure.instance_path))?;
+            f.write_fmt(format_args!("In file '{}':\n{err}", file.display()))?;
+        }
+        Ok(())
+    }
+}
+
+impl<'a> From<(PathBuf, Error)> for ErrorCollection {
+    fn from(file_and_err: (PathBuf, Error)) -> Self {
+        Self {
+            errors: vec![file_and_err],
+        }
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
