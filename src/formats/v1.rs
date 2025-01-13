@@ -185,7 +185,7 @@ pub struct Okh {
     #[cfg(feature = "v1_non_losh")]
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub manifest_langauge: Option<DSString>,
+    pub manifest_language: Option<DSString>,
 
     #[cfg(feature = "v1_non_losh")]
     #[serde(default)]
