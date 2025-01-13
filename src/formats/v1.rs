@@ -117,9 +117,9 @@ fn default_okh_manifest_version() -> Option<DSString> {
     Some("1.0.0".to_owned())
 }
 
-/// Thi srepresents the contents of an OKH v1 manifest file (YAML),
+/// This represents the contents of an OKH v1 manifest file (YAML),
 /// and allows us to parse such a file (okh.yml) with serde.
-/// It is based on the contents of the quasi-schema/stnadard by OHK themselfs,
+/// It is based on the contents of the quasi-schema/standard by OHK themselves,
 /// which can be found here:
 /// <https://git.iostud.io/makernet/iop-cdb/-/blob/dev/server/assets/okh.okhdf>
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
