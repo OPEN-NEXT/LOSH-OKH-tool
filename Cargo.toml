@@ -48,7 +48,7 @@ print_stderr = "warn"
 enum_variant_names = "allow"
 # NOTE allowed because:
 #      If the same regex is going to be applied to multiple inputs,
-#      the precomputations done by Regex construction
+#      the pre-computations done by Regex construction
 #      can give significantly better performance
 #      than any of the `str`-based methods.
 trivial_regex = "allow"
