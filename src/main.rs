@@ -257,7 +257,7 @@ fn print_version_and_exit(quiet: bool) {
     std::process::exit(0);
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main_inner() -> Result<(), Box<dyn Error>> {
     if cfg!(debug_assertions) {
         logger::init(None, (LevelFilter::Trace, LevelFilter::Trace));
     } else {
@@ -310,4 +310,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
     Ok(())
+}
+
+fn main() {
+    main_inner().unwrap_or_else(|err| {
+        log::error!("{err:#?}");
+        std::process::exit(1);
+    })
 }
