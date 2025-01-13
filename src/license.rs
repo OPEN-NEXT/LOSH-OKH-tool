@@ -58,11 +58,7 @@ pub enum Error {
     NotApproved(#[from] EvaluationError),
 }
 
-pub fn validate_spdx_expr(expr: &str) -> Result<(), Error> {
-    if expr.is_empty() {
-        return Err(Error::NoLicense);
-    }
-    let spdx_expr = spdx::Expression::parse(expr)?;
+pub fn check_osi_approval(expr: &str, spdx_expr: &spdx::Expression) -> Result<(), Error> {
     spdx_expr
         // .evaluate_with_failures(|req| {
         .evaluate_with_failures(|req| {
@@ -75,9 +71,20 @@ pub fn validate_spdx_expr(expr: &str) -> Result<(), Error> {
     Ok(())
 }
 
+pub fn validate_spdx_expr(expr: &str, require_osi_approval: bool) -> Result<(), Error> {
+    if expr.is_empty() {
+        return Err(Error::NoLicense);
+    }
+    let spdx_expr = spdx::Expression::parse(expr)?;
+    if require_osi_approval {
+        return check_osi_approval(expr, &spdx_expr);
+    }
+    Ok(())
+}
+
 // TODO The return could be a Cow, but we do not (yet) need it.
 pub fn ensure_spdx_license_id(license_id: &str) -> String {
-    if validate_spdx_expr(license_id).is_ok() {
+    if validate_spdx_expr(license_id, false).is_ok() {
         license_id.to_owned()
     } else {
         format!("LicenseRef-{license_id}")
