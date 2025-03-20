@@ -12,6 +12,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use crate::license;
+
 const SCHEMA_OKH_LOSH: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/resources/okh/src/schema/okh.schema.json"
@@ -44,6 +46,9 @@ pub enum Error {
     // #[error(transparent)]
     #[error("Failed to validate:\n{0:#}")]
     ValidationFailure(#[from] JsonSchemaValidationErrorCollection),
+
+    #[error("License issue:\n{0:#}")]
+    License(#[from] license::Error),
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -159,7 +164,15 @@ where
         .with_draft(Draft::Draft7)
         .build(&RAW_SCHEMA)
         .map_err(JsonSchemaValidationError::from)?;
-    with_schema(&validator, &instance)
+    with_schema(&validator, &instance)?;
+
+    if let Some(license_val) = instance.get("license") {
+        if let Some(license_str) = license_val.as_str() {
+            license::validate_spdx_expr(license_str, false)?;
+        }
+    }
+
+    Ok(())
 }
 
 pub fn okh_v1_yaml<IP>(yaml_path: IP) -> Result<(), Error>
