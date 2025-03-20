@@ -211,11 +211,9 @@ where
         } else {
             validation::okh_losh_toml
         };
-        let mut total_res: Result<(), validation::ErrorCollection> = Err(
-            (input_path.as_ref().to_path_buf(), validation::Error::NoManifestsFound).into());
         let mut errors = Vec::new();
         let mut manifests_processed = 0;
-        for input_file in dir::iter_exts(dir::walker(input_path, recursive), ext_matcher) {
+        for input_file in dir::iter_exts(dir::walker(&input_path, recursive), ext_matcher) {
             if let Some(input_file_name) = input_file.file_name() {
                 if !file_matcher.is_match(&input_file_name.to_string_lossy()) {
                     continue;
@@ -227,15 +225,20 @@ where
                 manifests_processed += 1;
             }
         }
-        if !errors.is_empty() {
+        let total_res: Result<(), validation::ErrorCollection> = if !errors.is_empty() {
             if errors.len() == 1 {
-                total_res = Err(errors.into_iter().next().unwrap().into());
+                Err(errors.into_iter().next().unwrap().into())
             } else {
-                total_res = Err(validation::ErrorCollection{errors}.into());
+                Err(validation::ErrorCollection { errors })
             }
         } else if manifests_processed > 0 {
-            total_res = Ok(());
-        }
+            Ok(())
+        } else {
+            Err(validation::ErrorCollection::from((
+                input_path.as_ref().to_path_buf(),
+                validation::Error::NoManifestsFound,
+            )))
+        };
         Ok(total_res?)
     } else {
         main_err!("input is neither a file nor a dir; do not know what to do");
@@ -316,5 +319,5 @@ fn main() {
     main_inner().unwrap_or_else(|err| {
         log::error!("{err:#?}");
         std::process::exit(1);
-    })
+    });
 }
