@@ -7,7 +7,10 @@ use jsonschema::{Draft, Validator};
 // use serde_json::json;
 use once_cell::sync::Lazy;
 
-use std::{fmt, fs, path::{Path, PathBuf}};
+use std::{
+    fmt, fs,
+    path::{Path, PathBuf},
+};
 
 const SCHEMA_OKH_LOSH: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
@@ -60,7 +63,7 @@ impl fmt::Display for ErrorCollection {
     }
 }
 
-impl<'a> From<(PathBuf, Error)> for ErrorCollection {
+impl From<(PathBuf, Error)> for ErrorCollection {
     fn from(file_and_err: (PathBuf, Error)) -> Self {
         Self {
             errors: vec![file_and_err],

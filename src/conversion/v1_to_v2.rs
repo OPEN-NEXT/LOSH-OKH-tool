@@ -123,14 +123,14 @@ const fn documentation_readiness_level(v1: &v1::Okh) -> Odrl {
     }
 }
 
-fn is_prototype(development_stage: &Option<String>) -> bool {
+fn is_prototype(development_stage: Option<&String>) -> bool {
     development_stage
         .as_ref()
         .is_some_and(|ds| ds.to_lowercase() == "prototype")
 }
 
 fn technology_readiness_level(v1: &v1::Okh) -> Otrl {
-    if v1.made_independently || v1.made || is_prototype(&v1.development_stage) {
+    if v1.made_independently || v1.made || is_prototype(v1.development_stage.as_ref()) {
         Otrl::Development
     } else {
         Otrl::Ideation // TODO HACK What should really be here?

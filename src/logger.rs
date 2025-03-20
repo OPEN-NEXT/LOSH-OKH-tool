@@ -24,7 +24,7 @@ pub fn init(file: Option<&Path>, level: (LevelFilter, LevelFilter)) {
             Config::default(),
             File::create(file_path).unwrap(),
         ));
-    };
+    }
     CombinedLogger::init(loggers).unwrap();
     log::trace!("Logging activated.");
     if let Some(file_path) = file {
