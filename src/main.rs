@@ -183,12 +183,12 @@ where
                 }
             }
         };
-        if okhv1_val {
-            validation::okh_v1_yaml(input_path)?;
+        let validator = if okhv1_val {
+            validation::okh_v1_yaml
         } else {
-            validation::okh_losh_toml(input_path)?;
-        }
-        Ok(())
+            validation::okh_losh_toml
+        };
+        Ok(validator(input_path)?)
     } else if input_path.as_ref().is_dir() {
         let okhv1_val = okhv1.unwrap_or_else(|| {
             panic!(
