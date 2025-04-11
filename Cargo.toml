@@ -55,6 +55,7 @@ trivial_regex = "allow"
 default_trait_access = "allow"
 struct_excessive_bools = "allow"
 fn_params_excessive_bools = "allow"
+result_large_err = "allow"
 
 [dependencies]
 chrono = "0.4"
@@ -68,7 +69,6 @@ lingua = "1.6"
 log = "0.4"
 num-derive = "0.4"
 num-traits = "0.2"
-once_cell = "1.19"
 openssl-sys = { version = "0.9", features = [ "vendored" ] } # better MUSL compatibility
 projvar = "0.19"
 regex = "1.10"
