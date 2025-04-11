@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 - 2023 Robin Vobruba <hoijui.quaero@gmail.com>
+# SPDX-FileCopyrightText: 2021 - 2025 Robin Vobruba <hoijui.quaero@gmail.com>
 #
 # SPDX-License-Identifier: Unlicense
 
@@ -17,7 +17,7 @@ homepage = "https://github.com/OPEN-NEXT/LOSH-OKH-tool"
 keywords = ["cli", "utility", "conversion", "okh"]
 categories = ["command-line-utilities", "text-processing"]
 readme = "README.md"
-edition = "2021"
+edition = "2024"
 
 [features]
 # Activate this to enable all OKH v1 properties,
@@ -26,6 +26,7 @@ edition = "2021"
 v1_non_losh = [] # feature has no explicit dependencies
 
 [lints.rust]
+rust_2024_compatibility = { level = "warn", priority = -1 }
 rust_2021_compatibility = { level = "warn", priority = -1 }
 dead_code = "allow"
 
