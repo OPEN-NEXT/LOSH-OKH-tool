@@ -109,8 +109,8 @@ pub fn find_root_files(proj_root: &Path) -> (ORelPath, ORelPath, ORelPath) {
         rgx!(r"CONTRIBUTI(NG|ON)?(\.(md|markdown))?"),
     ];
     let found_files = dir::scan(proj_root, false, root_file_filters, Path::file_name);
-    let single_found_files = found_files.iter().map(|fnds| {
-        let mut sorted = fnds.clone();
+    let single_found_files = found_files.iter().map(|finds| {
+        let mut sorted = finds.clone();
         sorted.sort_by_key(|pth| pth.as_os_str().len());
         sorted.first().map(|p| p.display().to_string())
     });
@@ -129,8 +129,8 @@ pub fn find_rec_files(proj_root: &Path) -> Vec<Vec<RelativePathBuf>> {
         &Regex::new(file_types::RS_PCB).unwrap(),
     ]; // TODO Write the second filter and use it
     let found_rec_files = dir::scan(proj_root, true, file_ext_filters, Path::extension);
-    let found_rec_files_map = found_rec_files.iter().map(|fnds| {
-        let mut sorted = fnds.clone();
+    let found_rec_files_map = found_rec_files.iter().map(|finds| {
+        let mut sorted = finds.clone();
         sorted.sort_by_key(|pth| pth.as_os_str().len());
         sorted
     });
@@ -147,10 +147,10 @@ pub fn find_rec_files(proj_root: &Path) -> Vec<Vec<RelativePathBuf>> {
 }
 
 fn first_commit(repo: &git2::Repository) -> Res<git2::Commit<'_>> {
-    let mut revwalk = repo.revwalk()?;
-    revwalk.push_head()?;
-    revwalk.set_sorting(git2::Sort::TOPOLOGICAL | git2::Sort::REVERSE)?;
-    Ok(repo.find_commit(revwalk.next().unwrap()?)?)
+    let mut rev_walk = repo.revwalk()?;
+    rev_walk.push_head()?;
+    rev_walk.set_sorting(git2::Sort::TOPOLOGICAL | git2::Sort::REVERSE)?;
+    Ok(repo.find_commit(rev_walk.next().unwrap()?)?)
 }
 
 fn find_parts(
