@@ -5,7 +5,7 @@
 // use jsonschema::{Draft, JSONSchema};
 use jsonschema::{Draft, Validator};
 // use serde_json::json;
-use once_cell::sync::Lazy;
+use std::sync::LazyLock;
 
 use std::{
     fmt, fs,
@@ -148,7 +148,7 @@ pub fn okh_losh_toml<IP>(toml_path: IP) -> Result<(), Error>
 where
     IP: AsRef<Path>,
 {
-    static RAW_SCHEMA: Lazy<serde_json::Value> = Lazy::new(|| {
+    static RAW_SCHEMA: LazyLock<serde_json::Value> = LazyLock::new(|| {
         serde_json::from_str::<serde_json::Value>(SCHEMA_OKH_LOSH)
             .expect("The OKH-LOSH JSON schema contained within the binary is invalid JSON :/")
     });
@@ -179,7 +179,7 @@ pub fn okh_v1_yaml<IP>(yaml_path: IP) -> Result<(), Error>
 where
     IP: AsRef<Path>,
 {
-    static RAW_SCHEMA: Lazy<serde_json::Value> = Lazy::new(|| {
+    static RAW_SCHEMA: LazyLock<serde_json::Value> = LazyLock::new(|| {
         serde_json::from_str::<serde_json::Value>(SCHEMA_OKH_V1)
             .expect("The OKH-V1 JSON schema contained within the binary is invalid JSON :/")
     });

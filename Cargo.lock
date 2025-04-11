@@ -2328,7 +2328,6 @@ dependencies = [
  "log",
  "num-derive",
  "num-traits",
- "once_cell",
  "openssl-sys",
  "projvar",
  "regex",
