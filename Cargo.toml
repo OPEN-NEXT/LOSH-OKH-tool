@@ -21,7 +21,7 @@ edition = "2021"
 
 [features]
 # Activate this to enable all OKH v1 properties,
-# as per default, only those requried for converting to OKH LOSH
+# as per default, only those required for converting to OKH LOSH
 # are enabled
 v1_non_losh = [] # feature has no explicit dependencies
 
