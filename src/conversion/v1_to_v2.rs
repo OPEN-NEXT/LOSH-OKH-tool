@@ -191,16 +191,16 @@ fn software(v1: &v1::Okh) -> Vec<v2::Software> {
 }
 
 fn standard(v1: &v1::Okh) -> Vec<v2::DSString> {
-    let mut standard = Vec::<v2::DSString>::new();
-    for strd in &v1.standards_used {
-        if !strd.reference.is_empty() {
-            standard.push(strd.reference.trim().to_string());
+    let mut standards = Vec::<v2::DSString>::new();
+    for standard in &v1.standards_used {
+        if !standard.reference.is_empty() {
+            standards.push(standard.reference.trim().to_string());
         }
-        if !strd.standard_title.is_empty() {
-            standard.push(strd.standard_title.trim().to_string());
+        if !standard.standard_title.is_empty() {
+            standards.push(standard.standard_title.trim().to_string());
         }
     }
-    standard
+    standards
 }
 
 fn sub_mosh(v1: &v1::Okh) -> Result<Vec<v2::SubMosh>, Error> {
