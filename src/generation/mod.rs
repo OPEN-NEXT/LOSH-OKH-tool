@@ -47,7 +47,7 @@ pub enum Error {
     #[error("Failed to convert string to UTF-8.")]
     NonUtf8(#[from] std::string::FromUtf8Error),
 
-    #[error("Failed to cast a path to a reltive one.")]
+    #[error("Failed to cast a path to a relative one.")]
     PathNotRelative(#[from] relative_path::FromPathError),
 
     #[error("Failed to cast a string to a URL.")]

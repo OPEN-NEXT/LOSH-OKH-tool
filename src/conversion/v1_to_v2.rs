@@ -261,7 +261,7 @@ fn collect_doc_paths(docs: &'_ [v1::Document]) -> impl '_ + Iterator<Item = Rela
 }
 
 fn collect_doc_path(docs: &[v1::Document]) -> Option<RelativePathBuf> {
-    collect_doc_paths(docs).next() // TODO FIXME This irgnores all but the first document with a path!
+    collect_doc_paths(docs).next() // TODO FIXME This ignores all but the first document with a path!
 }
 
 pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
@@ -287,7 +287,7 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
     let license = license(&v1)?;
     let licensor = licensor(&v1)?;
     let manufacturing_instructions = collect_doc_paths(&v1.making_instructions).collect();
-    let user_manual = collect_doc_path(&v1.operating_instructions); // TODO FIXME This irgnores all but the first operating instruction!
+    let user_manual = collect_doc_path(&v1.operating_instructions); // TODO FIXME This ignores all but the first operating instruction!
     let software = software(&v1);
     let standard = standard(&v1);
     let source = vec![]; // TODO see v1.design_files and v1.schematics, but split into source, export and auxiliary!
