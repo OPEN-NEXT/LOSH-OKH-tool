@@ -81,11 +81,7 @@ pub enum Source {
 
 impl From<bool> for Source {
     fn from(val: bool) -> Self {
-        if val {
-            Self::Source
-        } else {
-            Self::Export
-        }
+        if val { Self::Source } else { Self::Export }
     }
 }
 

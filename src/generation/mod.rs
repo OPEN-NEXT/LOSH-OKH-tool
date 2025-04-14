@@ -18,9 +18,9 @@ use std::process::Command;
 use std::{fs, path::Path};
 use url::Url;
 
+use crate::formats::SerError;
 use crate::formats::v2;
 use crate::formats::v2::SubMosh;
-use crate::formats::SerError;
 use crate::macros::rgx;
 use crate::{dir, file_types, license};
 

@@ -329,7 +329,9 @@ impl Okh {
             &parsed.license.software,
         ) == (&None, &None, &None)
         {
-            panic!("at least one of the three licenses (documentation, hardware or software) has to be set");
+            panic!(
+                "at least one of the three licenses (documentation, hardware or software) has to be set"
+            );
         }
 
         Ok(parsed)

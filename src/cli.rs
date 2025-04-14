@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use clap::{command, value_parser, Arg, ArgAction, Command, ValueHint};
+use clap::{Arg, ArgAction, Command, ValueHint, command, value_parser};
 use const_format::formatcp;
 use std::{env, path::PathBuf};
 

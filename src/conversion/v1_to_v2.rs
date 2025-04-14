@@ -7,9 +7,9 @@ use std::path::Path;
 use relative_path::RelativePathBuf;
 use url::Url;
 
+use crate::formats::Locator;
 use crate::formats::v1;
 use crate::formats::v2;
-use crate::formats::Locator;
 use crate::license;
 use crate::oxrl::Odrl;
 use crate::oxrl::Otrl;
@@ -92,7 +92,9 @@ fn fork_of(v1: &v1::Okh) -> Result<Option<Url>, Error> {
         } else if let Some(web) = &parent.web {
             Some(web.clone())
         } else {
-            return Err(Error::InsufficientData { msg: "For 'derivative-of' and 'variant-of', at least one of 'web' and 'manifest' needs to be specified" });
+            return Err(Error::InsufficientData {
+                msg: "For 'derivative-of' and 'variant-of', at least one of 'web' and 'manifest' needs to be specified",
+            });
         });
     }
     Ok(None)
@@ -296,12 +298,12 @@ pub fn convert(v1: v1::Okh) -> Result<v2::Okh, Error> {
     let part = sub_mosh(&v1)?;
     let image = v1.image.into_iter().collect();
     let upload_method = Some("manifest-script".to_string()); // TODO cleanup this whole property in the specs
-                                                             // let __meta = v2::Meta {
-                                                             //     source: data_source(&v1),
-                                                             //     owner: None,
-                                                             //     repo: None,
-                                                             //     path: None,
-                                                             // };
+    // let __meta = v2::Meta {
+    //     source: data_source(&v1),
+    //     owner: None,
+    //     repo: None,
+    //     path: None,
+    // };
 
     Ok(v2::Okh {
         okhv: v2::OKHV.to_owned(),
