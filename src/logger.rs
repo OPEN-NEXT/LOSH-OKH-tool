@@ -28,6 +28,6 @@ pub fn init(file: Option<&Path>, level: (LevelFilter, LevelFilter)) {
     CombinedLogger::init(loggers).unwrap();
     log::trace!("Logging activated.");
     if let Some(file_path) = file {
-        log::info!("Logging to file '{:?}'.", file_path);
+        log::info!("Logging to file '{}'.", file_path.display());
     }
 }
