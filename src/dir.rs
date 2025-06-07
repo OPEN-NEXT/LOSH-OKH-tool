@@ -28,12 +28,11 @@ pub fn iter_exts(walker: WalkDir, ext_matcher: &'_ Regex) -> impl '_ + Iterator<
         .filter_map(Result::ok)
         .filter(|entry| {
             let path = entry.path();
-            if path.is_file() {
-                if let Some(ext) = path.extension() {
-                    if let Some(ext_utf8) = ext.to_str() {
-                        return ext_matcher.is_match(ext_utf8);
-                    }
-                }
+            if path.is_file()
+                && let Some(ext) = path.extension()
+                && let Some(ext_utf8) = ext.to_str()
+            {
+                return ext_matcher.is_match(ext_utf8);
             }
             false
         })
@@ -59,16 +58,15 @@ where
         .filter_map(Result::ok)
         .for_each(|entry| {
             let path = entry.path().strip_prefix(&root_dir).unwrap();
-            if path.is_file() {
-                if let Some(part) = path_part_extractor(path) {
-                    if let Some(part_utf8) = part.to_str() {
-                        filters.iter().enumerate().for_each(|(i, flt)| {
-                            if flt.is_match(part_utf8) {
-                                matching.get_mut(i).unwrap().push(path.to_path_buf());
-                            }
-                        });
+            if path.is_file()
+                && let Some(part) = path_part_extractor(path)
+                && let Some(part_utf8) = part.to_str()
+            {
+                filters.iter().enumerate().for_each(|(i, flt)| {
+                    if flt.is_match(part_utf8) {
+                        matching.get_mut(i).unwrap().push(path.to_path_buf());
                     }
-                }
+                });
             }
         });
     matching

@@ -182,14 +182,14 @@ fn find_parts(
             .is_some()
         {
             let sub_part_dir = toml_path.parent();
-            if let Some(sub_part_dir_val) = sub_part_dir {
-                if sub_part_dir_val != cwd {
-                    log::trace!("XXX part_dir: {sub_part_dir_val}");
-                    sub_part_dirs
-                        .entry(sub_part_dir_val.to_relative_path_buf())
-                        .or_default()
-                        .insert(okh_toml_name_rel_path.clone());
-                }
+            if let Some(sub_part_dir_val) = sub_part_dir
+                && sub_part_dir_val != cwd
+            {
+                log::trace!("XXX part_dir: {sub_part_dir_val}");
+                sub_part_dirs
+                    .entry(sub_part_dir_val.to_relative_path_buf())
+                    .or_default()
+                    .insert(okh_toml_name_rel_path.clone());
             }
         }
     }
@@ -262,7 +262,7 @@ fn generate_data(module_dir: &Path, environment: &Environment, overwrite: bool) 
     let version = pv(environment, Key::Version)?;
     // projvar::validator::get(Key::Version)(release);
     if !is_release_version(&version) {
-        log::warn!("You are not on a release version: {}", version);
+        log::warn!("You are not on a release version: {version}");
     }
 
     let now: DateTime<Utc> = Utc::now();
