@@ -166,9 +166,7 @@ where
         .map_err(JsonSchemaValidationError::from)?;
     with_schema(&validator, &instance)?;
 
-    if let Some(license_val) = instance.get("license")
-        && let Some(license_str) = license_val.as_str()
-    {
+    if let Some(license_str) = instance.get("license").and_then(|v| v.as_str()) {
         license::validate_spdx_expr(license_str, false)?;
     }
 

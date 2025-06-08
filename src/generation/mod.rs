@@ -182,8 +182,8 @@ fn find_parts(
             .is_some()
         {
             let sub_part_dir = toml_path.parent();
-            if let Some(sub_part_dir_val) = sub_part_dir
-                && sub_part_dir_val != cwd
+            if let Some(sub_part_dir_val) =
+                sub_part_dir.filter(|sub_part_dir_val| *sub_part_dir_val != cwd)
             {
                 log::trace!("XXX part_dir: {sub_part_dir_val}");
                 sub_part_dirs

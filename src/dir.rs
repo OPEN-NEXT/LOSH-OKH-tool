@@ -28,13 +28,12 @@ pub fn iter_exts(walker: WalkDir, ext_matcher: &'_ Regex) -> impl '_ + Iterator<
         .filter_map(Result::ok)
         .filter(|entry| {
             let path = entry.path();
-            if path.is_file()
-                && let Some(ext) = path.extension()
-                && let Some(ext_utf8) = ext.to_str()
-            {
-                return ext_matcher.is_match(ext_utf8);
-            }
-            false
+            path.is_file()
+                .then_some(path)
+                .and_then(|path_ref| path_ref.extension())
+                .and_then(|part| part.to_str())
+                .filter(|ext_utf8| ext_matcher.is_match(ext_utf8))
+                .is_some()
         })
         .map(|entry| entry.path().to_path_buf())
 }
@@ -58,9 +57,11 @@ where
         .filter_map(Result::ok)
         .for_each(|entry| {
             let path = entry.path().strip_prefix(&root_dir).unwrap();
-            if path.is_file()
-                && let Some(part) = path_part_extractor(path)
-                && let Some(part_utf8) = part.to_str()
+            if let Some(part_utf8) = path
+                .is_file()
+                .then_some(path)
+                .and_then(|path_ref| path_part_extractor(path_ref))
+                .and_then(|part| part.to_str())
             {
                 filters.iter().enumerate().for_each(|(i, flt)| {
                     if flt.is_match(part_utf8) {
