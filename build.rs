@@ -10,6 +10,8 @@ use std::{
     path::{Path, PathBuf},
     process,
 };
+use typify::{TypeSpace, TypeSpaceSettings};
+use schemars::schema::RootSchema;
 
 #[path = "src/file_types_format.rs"]
 mod file_types_format;
@@ -92,9 +94,28 @@ fn transcribe_file_exts() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn convert_okh_schema_to_types() {
+    let schema_file = "resources/okh/src/schema/okh.schema.json";
+    println!("cargo:rerun-if-changed={schema_file}");
+    let content = std::fs::read_to_string(schema_file).unwrap();
+    let schema = serde_json::from_str::<RootSchema>(&content).unwrap();
+
+    let mut type_space = TypeSpace::new(TypeSpaceSettings::default().with_struct_builder(true));
+    type_space.add_root_schema(schema).unwrap();
+
+    let contents =
+        prettyplease::unparse(&syn::parse2::<syn::File>(type_space.to_stream()).unwrap());
+
+    let mut out_file = Path::new(&env::var("OUT_DIR").unwrap()).to_path_buf();
+    out_file.push("okh_model_v_2_4.rs");
+    fs::write(out_file, contents).unwrap();
+}
+
 fn main() {
     if let Err(err) = transcribe_file_exts() {
         println!("error running transcribe_file_exts(): {err}");
         process::exit(1);
     }
+
+    // convert_okh_schema_to_types();
 }
