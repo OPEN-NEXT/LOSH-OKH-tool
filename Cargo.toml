@@ -70,11 +70,10 @@ lingua = "1.6"
 log = "0.4"
 num-derive = "0.4"
 num-traits = "0.2"
-openssl-sys = { version = "0.9", features = [ "vendored" ] } # better MUSL compatibility
 projvar = "0.19"
 regex = "1.10"
 relative-path = { version = "2.0", features = ["serde"] }
-reqwest = { version = "0.12", features = ["blocking"] }
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls"] }
 semver = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -84,7 +83,7 @@ spdx = "0.10"
 strum = "0.27"
 strum_macros = "0.27"
 thiserror = "2.0"
-toml = "0.8"
+toml = "0.9"
 url = { version = "2.5", features = ["serde"] }
 walkdir = "2.4"
 yaml-rust = "0.4"
