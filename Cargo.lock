@@ -2221,7 +2221,7 @@ dependencies = [
 
 [[package]]
 name = "okh-tool"
-version = "2.4.1"
+version = "2.4.2"
 dependencies = [
  "chrono",
  "clap",
