@@ -65,7 +65,7 @@ codify = { version = "0.6", package = "codify_hoijui" }
 const_format = "0.2"
 git-version = "0.3"
 git2 = { version = "0.20", default-features = false } # "default-features = false" is required for MUSL compatibility, to get rid of OpenSSL
-jsonschema = "0.30"
+jsonschema = "0.32"
 lingua = "1.6"
 log = "0.4"
 num-derive = "0.4"
