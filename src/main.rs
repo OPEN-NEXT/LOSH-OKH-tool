@@ -107,7 +107,7 @@ where
         let yaml_file = input_path;
         let toml_file = output_path_val;
         if toml_file.exists() && !overwrite {
-            log::info!(
+            log::warn!(
                 "Skipping conversion of '{}' to '{}', because the target file already exists (see --{})",
                 yaml_file.as_ref().display(),
                 toml_file.display(),
@@ -141,7 +141,7 @@ where
                 toml_file.set_extension("toml");
                 fs::create_dir_all(toml_file.parent().unwrap())?;
                 if toml_file.exists() && !overwrite {
-                    log::info!(
+                    log::warn!(
                         "Skipping conversion of '{}' to '{}', because the target file already exists (see --{})",
                         yaml_file.display(),
                         toml_file.display(),
