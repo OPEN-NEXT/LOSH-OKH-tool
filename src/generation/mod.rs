@@ -375,6 +375,7 @@ pub fn okh_losh_toml_part(
         )?;
         let git_user_email = git_user_email_dirty.trim_end();
         let now: DateTime<Utc> = Utc::now();
+        // REUSE-IgnoreStart
         let header = format!(
             "# SPDX-FileCopyrightText: {} {} <{}>
 #
@@ -383,6 +384,7 @@ pub fn okh_losh_toml_part(
             git_user_name,
             git_user_email
         );
+        // REUSE-IgnoreEnd
 
         let content = okh_losh.to_toml()?;
 
