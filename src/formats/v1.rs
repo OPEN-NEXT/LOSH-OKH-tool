@@ -44,6 +44,19 @@ pub struct License {
     pub software: Option<DSString>,
 }
 
+#[cfg(feature = "v1_non_losh")]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "kebab-case")]
+pub struct Social {
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub platform: Option<DSString>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub user_handle: Option<DSString>,
+}
+
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub struct Person {
@@ -192,11 +205,13 @@ pub struct Okh {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub manifest_is_translation: Option<OtherThingWithLang>,
 
+    /// This may use the field 'social' within `Person`.
     #[cfg(feature = "v1_non_losh")]
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub contact: Option<PersonSocial>,
+    pub contact: Option<Person>,
 
+    /// These may *not* use the field 'social' within `Person`.
     #[cfg(feature = "v1_non_losh")]
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
