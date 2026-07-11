@@ -68,9 +68,7 @@ fn pv(environment: &projvar::environment::Environment, key: Key) -> Res<String> 
 }
 
 fn is_release_version(version: &str) -> bool {
-    semver::Version::parse(version)
-        .map(|vers| vers.pre.is_empty() && vers.build.is_empty())
-        .unwrap_or(false)
+    semver::Version::parse(version).is_ok_and(|vers| vers.pre.is_empty() && vers.build.is_empty())
 }
 
 pub fn run_projvar(proj_root: &Path) -> Res<projvar::environment::Environment> {
@@ -178,8 +176,8 @@ fn find_parts(
         // Its an OKH TOML and not the root one.
         if toml_path
             .file_name()
-            .filter(|f_name| *f_name == okh_toml_name_os)
-            .is_some()
+            .as_ref()
+            .is_some_and(|f_name| *f_name == okh_toml_name_os)
         {
             let sub_part_dir = toml_path.parent();
             if let Some(sub_part_dir_val) =

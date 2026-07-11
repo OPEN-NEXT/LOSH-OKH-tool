@@ -32,8 +32,8 @@ pub fn iter_exts(walker: WalkDir, ext_matcher: &'_ Regex) -> impl '_ + Iterator<
                 .then_some(path)
                 .and_then(|path_ref| path_ref.extension())
                 .and_then(|part| part.to_str())
-                .filter(|ext_utf8| ext_matcher.is_match(ext_utf8))
-                .is_some()
+                .as_ref()
+                .is_some_and(|ext_utf8| ext_matcher.is_match(ext_utf8))
         })
         .map(|entry| entry.path().to_path_buf())
 }

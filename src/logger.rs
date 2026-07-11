@@ -11,7 +11,7 @@ use simplelog::{
 };
 
 pub fn init(file: Option<&Path>, level: (LevelFilter, LevelFilter)) {
-    let mut loggers: Vec<Box<(dyn SharedLogger + 'static)>> = vec![TermLogger::new(
+    let mut loggers: Vec<Box<dyn SharedLogger + 'static>> = vec![TermLogger::new(
         // LevelFilter::Info,
         level.0,
         Config::default(),
