@@ -151,7 +151,7 @@ where
                 }
                 let res = conversion::v1_to_v2::convert_file(&yaml_file, &toml_file);
                 if let Err(err) = res {
-                    log::warn!("File: '{}'\n{}", yaml_file.display(), &err);
+                    log::warn!("File: '{}'\n{err}", yaml_file.display());
                     total_res = Err(err); // TODO FIXME We need a simple "Not all succeeded" indicator error here!
                     if !cont {
                         break;

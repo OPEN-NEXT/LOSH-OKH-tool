@@ -227,11 +227,10 @@ fn sub_mosh(v1: &v1::Okh) -> Result<Vec<v2::SubMosh>, Error> {
                     .map(RelativePathBuf::from)
             })
         });
-        let image = if let Some(image) = v1.image.as_ref() {
-            vec![image.clone()]
-        } else {
-            vec![]
-        };
+        let image = v1
+            .image
+            .as_ref()
+            .map_or_else(Vec::new, |image| vec![image.clone()]);
         let tsdc = None;
         let source = vec![]; // TODO This or export is required
         let export = vec![]; // TODO This or source is required

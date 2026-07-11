@@ -69,7 +69,7 @@ pub struct SubMosh {
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub part: Vec<SubMosh>,
+    pub part: Vec<Self>,
 }
 
 // #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
