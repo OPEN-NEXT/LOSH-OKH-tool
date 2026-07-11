@@ -113,9 +113,9 @@ where
                 toml_file.display(),
                 cli::A_L_OVERWRITE
             );
-            Err("target file already exists")
+            Err("target file already exists".into())
         } else {
-            conversion::v1_to_v2::convert_file(yaml_file, &toml_file)
+            conversion::v1_to_v2::convert_file(yaml_file, &toml_file).map_err(Into::into)
         }
     } else if input_path.as_ref().is_dir() {
         let output_path_val = match output_path {
