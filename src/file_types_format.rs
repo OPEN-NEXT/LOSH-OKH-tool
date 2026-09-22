@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-/// This contians types for the data stored in
+/// This contains types for the data stored in
 /// `resources/osh-file-types/file_extension_formats-*.csv`,
 /// which is loaded by `build.rs` and written to `file_types.rs`.
 use serde::Deserialize;
