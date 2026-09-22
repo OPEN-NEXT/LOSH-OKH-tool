@@ -77,25 +77,16 @@ impl From<(PathBuf, Error)> for ErrorCollection {
 }
 
 #[derive(thiserror::Error, Debug)]
-#[error("Error:\n\tKind:    {kind:?}\n\tWhere:   {instance_path}\n\tContent: {instance}\n")]
+#[error("Error:\n\tKind:    {:?}\n\tWhere:   {}\n\tContent: {}\n",
+inner.kind(), inner.instance_path(), inner.instance())]
 pub struct JsonSchemaValidationError {
-    /// Value of the property that failed validation.
-    pub instance: serde_json::Value,
-    /// Type of validation error.
-    pub kind: jsonschema::error::ValidationErrorKind,
-    /// Path to the value that failed validation.
-    pub instance_path: jsonschema::paths::Location,
-    /// Path to the JSON Schema keyword that failed validation.
-    pub schema_path: jsonschema::paths::Location,
+    pub inner: jsonschema::ValidationError<'static>,
 }
 
 impl<'a> From<jsonschema::ValidationError<'a>> for JsonSchemaValidationError {
     fn from(err: jsonschema::ValidationError<'a>) -> Self {
         Self {
-            instance: err.instance.into_owned(),
-            kind: err.kind,
-            instance_path: err.instance_path,
-            schema_path: err.schema_path,
+            inner: err.to_owned(),
         }
     }
 }
