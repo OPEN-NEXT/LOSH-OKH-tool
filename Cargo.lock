@@ -356,12 +356,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "codify_hoijui"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36c3d4bad72ecb9020e9cf1419dd51a5edb449814dc3ecb3afbd21b993d670f5"
-
-[[package]]
 name = "colorchoice"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2158,12 +2152,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "linked-hash-map"
-version = "0.5.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0717cef1bc8b636c6e1c1bbdefc09e6322da8a9321966e8928ef80d20f7f770f"
-
-[[package]]
 name = "litemap"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2403,7 +2391,6 @@ version = "2.4.3"
 dependencies = [
  "chrono",
  "clap",
- "codify_hoijui",
  "const_format",
  "csv",
  "git-version",
@@ -2429,7 +2416,6 @@ dependencies = [
  "toml",
  "url",
  "walkdir",
- "yaml-rust",
 ]
 
 [[package]]
@@ -4053,15 +4039,6 @@ name = "writeable"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3ad82d2a33cdc9674dc7465672f271e096168fcdbe0f799d9e6db8c5892679dc"
-
-[[package]]
-name = "yaml-rust"
-version = "0.4.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56c1936c4cc7a1c9ab21a1ebb602eb942ba868cbd44a99cb7cdc5892335e1c85"
-dependencies = [
- "linked-hash-map",
-]
 
 [[package]]
 name = "yoke"
