@@ -81,7 +81,7 @@ spdx = "0.13"
 strum = "0.28"
 strum_macros = "0.28"
 thiserror = "2.0"
-toml = "1.1.2+spec-1.1.0"
+toml = "1.1.6+spec-1.1.0"
 url = { version = "2.5", features = ["serde"] }
 walkdir = "2.4"
 
