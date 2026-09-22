@@ -20,7 +20,7 @@ const OSH_FILE_TYPES_ROOT: &str = "resources/osh-file-types";
 
 fn transcribe_file_ext(dest_file: &mut File, category: &str) -> Result<(), Box<dyn Error>> {
     let in_file = fs::canonicalize(PathBuf::from(format!(
-        "{OSH_FILE_TYPES_ROOT}/file_extension_formats-{category}.csv"
+        "{OSH_FILE_TYPES_ROOT}/res/data/{category}.csv"
     )))?;
     println!("cargo:rerun-if-changed={}", in_file.display());
     let mut rdr = csv::Reader::from_path(in_file)?;
